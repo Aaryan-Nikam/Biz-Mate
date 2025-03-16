@@ -20,6 +20,10 @@ const Index = () => {
 
   const handleRoleSelect = (role: "homeowner" | "provider") => {
     setUserRole(role);
+    // Don't navigate automatically - let them pick a niche first
+  };
+
+  const handleNicheSelect = (niche: "solar" | "hvac" | "remodeling") => {
     navigate("/login");
   };
 
@@ -38,10 +42,10 @@ const Index = () => {
           </p>
         </motion.div>
 
-        {user?.role ? (
-          <NicheSelection onSelectNiche={(niche) => navigate("/login")} />
-        ) : (
+        {!user?.role ? (
           <RoleSelection onSelectRole={handleRoleSelect} />
+        ) : (
+          <NicheSelection onSelectNiche={handleNicheSelect} />
         )}
 
         <div className="mt-12 text-center">

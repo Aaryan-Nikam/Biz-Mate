@@ -10,9 +10,11 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Dashboard from "./pages/Dashboard";
 import Calculator from "./pages/Calculator";
-import Quote from "./pages/Quote";
 import SendQuote from "./pages/SendQuote";
 import NotFound from "./pages/NotFound";
+import SolarDashboard from "./pages/SolarDashboard";
+import HVACDashboard from "./pages/HVACDashboard";
+import RemodelingDashboard from "./pages/RemodelingDashboard";
 
 const queryClient = new QueryClient();
 
@@ -29,8 +31,10 @@ const App = () => (
             <Route path="/signup" element={<Signup />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/calculator" element={<Calculator />} />
-            <Route path="/quote" element={<Quote />} />
             <Route path="/send" element={<SendQuote />} />
+            <Route path="/solar-dashboard" element={<SolarDashboard />} />
+            <Route path="/hvac-dashboard" element={<HVACDashboard />} />
+            <Route path="/remodeling-dashboard" element={<RemodelingDashboard />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </UserProvider>

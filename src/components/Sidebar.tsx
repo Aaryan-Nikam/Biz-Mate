@@ -89,22 +89,31 @@ const Sidebar: React.FC = () => {
     }
   };
 
+  const getNicheDashboardPath = (niche?: NicheType) => {
+    switch (niche) {
+      case "solar":
+        return "/solar-dashboard";
+      case "hvac":
+        return "/hvac-dashboard";
+      case "remodeling":
+        return "/remodeling-dashboard";
+      default:
+        return "/dashboard";
+    }
+  };
+
   const navItems = [
     { 
       icon: getNicheIcon(user?.niche), 
-      label: "Dashboard", 
-      path: "/dashboard"
+      label: user?.niche 
+        ? `${user.niche.charAt(0).toUpperCase() + user.niche.slice(1)} Dashboard` 
+        : "Dashboard", 
+      path: getNicheDashboardPath(user?.niche)
     },
     { 
       icon: Calculator, 
       label: "ROI Calculator", 
       path: "/calculator" 
-    },
-    { 
-      icon: BarChart3, 
-      label: "My Quotes", 
-      path: "/quote",
-      badgeText: user?.niche ? "New" : undefined
     },
     { 
       icon: Mail, 
@@ -166,7 +175,6 @@ const Sidebar: React.FC = () => {
               isActive={location.pathname === item.path}
               onClick={() => navigate(item.path)}
               collapsed={collapsed}
-              badgeText={item.badgeText}
             />
           ))}
         </nav>
