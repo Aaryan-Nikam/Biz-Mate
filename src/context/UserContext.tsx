@@ -2,6 +2,7 @@
 import React, { createContext, useState, useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { NicheType } from "@/components/NicheSelection";
 
 type UserRole = "homeowner" | "provider" | null;
 
@@ -9,6 +10,7 @@ interface User {
   id: string;
   email: string;
   role: UserRole;
+  niche?: NicheType;
 }
 
 interface UserContextType {
@@ -19,6 +21,7 @@ interface UserContextType {
   signup: (email: string, password: string, role: UserRole) => Promise<void>;
   logout: () => void;
   setUserRole: (role: UserRole) => void;
+  setUserNiche: (niche: NicheType) => void;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -56,7 +59,8 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const authenticatedUser = {
         id: foundUser.id,
         email: foundUser.email,
-        role: foundUser.role
+        role: foundUser.role,
+        niche: foundUser.niche
       };
       
       // Save to state and localStorage
@@ -86,16 +90,23 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
         throw new Error("User already exists");
       }
       
+      // Check for temp role/niche in localStorage
+      const tempUser = JSON.parse(localStorage.getItem("tempUser") || "{}");
+      
       // Create new user
       const newUser = {
         id: Date.now().toString(),
         email,
         password,
-        role
+        role: role || tempUser.role,
+        niche: tempUser.niche
       };
       
       // Save to localStorage
       localStorage.setItem("users", JSON.stringify([...storedUsers, newUser]));
+      
+      // Clear temp user
+      localStorage.removeItem("tempUser");
       
       toast.success("Signup successful! Please log in.");
       navigate("/login");
@@ -115,10 +126,40 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const setUserRole = (role: UserRole) => {
+    // Store temporarily for users who haven't signed up yet
+    const tempUser = JSON.parse(localStorage.getItem("tempUser") || "{}");
+    localStorage.setItem("tempUser", JSON.stringify({ ...tempUser, role }));
+    
     if (user) {
       const updatedUser = { ...user, role };
       setUser(updatedUser);
       localStorage.setItem("user", JSON.stringify(updatedUser));
+      
+      // Update in users array too
+      const storedUsers = JSON.parse(localStorage.getItem("users") || "[]");
+      const updatedUsers = storedUsers.map((u: any) => 
+        u.id === user.id ? { ...u, role } : u
+      );
+      localStorage.setItem("users", JSON.stringify(updatedUsers));
+    }
+  };
+
+  const setUserNiche = (niche: NicheType) => {
+    // Store temporarily for users who haven't signed up yet
+    const tempUser = JSON.parse(localStorage.getItem("tempUser") || "{}");
+    localStorage.setItem("tempUser", JSON.stringify({ ...tempUser, niche }));
+    
+    if (user) {
+      const updatedUser = { ...user, niche };
+      setUser(updatedUser);
+      localStorage.setItem("user", JSON.stringify(updatedUser));
+      
+      // Update in users array too
+      const storedUsers = JSON.parse(localStorage.getItem("users") || "[]");
+      const updatedUsers = storedUsers.map((u: any) => 
+        u.id === user.id ? { ...u, niche } : u
+      );
+      localStorage.setItem("users", JSON.stringify(updatedUsers));
     }
   };
 
@@ -129,7 +170,8 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
     login,
     signup,
     logout,
-    setUserRole
+    setUserRole,
+    setUserNiche
   };
 
   return <UserContext.Provider value={value}>{children}</UserContext.Provider>;

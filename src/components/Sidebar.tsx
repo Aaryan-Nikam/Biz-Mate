@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -12,10 +12,15 @@ import {
   Settings,
   LogOut,
   User,
-  Mail
+  Mail,
+  Sun,
+  Wind,
+  HomeIcon
 } from "lucide-react";
 import { useUser } from "@/context/UserContext";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { NicheType } from "@/components/NicheSelection";
+import { Badge } from "@/components/ui/badge";
 
 interface NavItemProps {
   icon: React.ElementType;
@@ -24,6 +29,7 @@ interface NavItemProps {
   isActive: boolean;
   onClick: () => void;
   collapsed: boolean;
+  badgeText?: string;
 }
 
 const NavItem: React.FC<NavItemProps> = ({
@@ -31,7 +37,8 @@ const NavItem: React.FC<NavItemProps> = ({
   label,
   isActive,
   onClick,
-  collapsed
+  collapsed,
+  badgeText
 }) => {
   return (
     <Button
@@ -43,7 +50,16 @@ const NavItem: React.FC<NavItemProps> = ({
       onClick={onClick}
     >
       <Icon size={20} className={cn("flex-shrink-0", collapsed ? "mr-0" : "mr-2")} />
-      {!collapsed && <span>{label}</span>}
+      {!collapsed && (
+        <div className="flex flex-1 items-center justify-between">
+          <span>{label}</span>
+          {badgeText && (
+            <Badge variant="outline" className="text-xs">
+              {badgeText}
+            </Badge>
+          )}
+        </div>
+      )}
     </Button>
   );
 };
@@ -55,13 +71,56 @@ const Sidebar: React.FC = () => {
   const isMobile = useIsMobile();
   const [collapsed, setCollapsed] = useState(isMobile);
 
+  // Update collapsed state when mobile status changes
+  useEffect(() => {
+    setCollapsed(isMobile);
+  }, [isMobile]);
+
+  const getNicheIcon = (niche?: NicheType) => {
+    switch (niche) {
+      case "solar":
+        return Sun;
+      case "hvac":
+        return Wind;
+      case "remodeling":
+        return HomeIcon;
+      default:
+        return Home;
+    }
+  };
+
   const navItems = [
-    { icon: Home, label: "Dashboard", path: "/dashboard" },
-    { icon: Calculator, label: "ROI Calculator", path: "/calculator" },
-    { icon: BarChart3, label: "My Quotes", path: "/quote" },
-    { icon: Mail, label: "Send Quote", path: "/send" },
-    { icon: User, label: "My Account", path: "/account" },
-    { icon: Settings, label: "Settings", path: "/settings" }
+    { 
+      icon: getNicheIcon(user?.niche), 
+      label: "Dashboard", 
+      path: "/dashboard"
+    },
+    { 
+      icon: Calculator, 
+      label: "ROI Calculator", 
+      path: "/calculator" 
+    },
+    { 
+      icon: BarChart3, 
+      label: "My Quotes", 
+      path: "/quote",
+      badgeText: user?.niche ? "New" : undefined
+    },
+    { 
+      icon: Mail, 
+      label: "Send Quote", 
+      path: "/send" 
+    },
+    { 
+      icon: User, 
+      label: "My Account", 
+      path: "/account" 
+    },
+    { 
+      icon: Settings, 
+      label: "Settings", 
+      path: "/settings" 
+    }
   ];
 
   const toggleSidebar = () => {
@@ -87,6 +146,16 @@ const Sidebar: React.FC = () => {
           </Button>
         </div>
 
+        {!collapsed && user?.niche && (
+          <div className="mb-4 px-3">
+            <Badge variant="outline" className="mb-2">
+              {user.niche === "solar" && "Solar Dashboard"}
+              {user.niche === "hvac" && "HVAC Dashboard"}
+              {user.niche === "remodeling" && "Remodeling Dashboard"}
+            </Badge>
+          </div>
+        )}
+
         <nav className="space-y-0.5">
           {navItems.map((item) => (
             <NavItem
@@ -97,6 +166,7 @@ const Sidebar: React.FC = () => {
               isActive={location.pathname === item.path}
               onClick={() => navigate(item.path)}
               collapsed={collapsed}
+              badgeText={item.badgeText}
             />
           ))}
         </nav>
