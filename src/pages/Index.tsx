@@ -6,9 +6,16 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import RoleSelection from "@/components/RoleSelection";
 import { ArrowRight } from "lucide-react";
+import { useUser } from "@/context/UserContext";
 
 const Index = () => {
   const navigate = useNavigate();
+  const { setUserRole } = useUser();
+
+  const handleRoleSelect = (role: "homeowner" | "provider") => {
+    setUserRole(role);
+    navigate("/signup");
+  };
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-b from-blue-50 to-white">
@@ -28,7 +35,7 @@ const Index = () => {
             Select your role below to get started with personalized insights.
           </p>
 
-          <RoleSelection />
+          <RoleSelection onSelectRole={handleRoleSelect} />
 
           <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
             <Button 

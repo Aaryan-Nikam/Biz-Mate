@@ -48,11 +48,33 @@ const mockQuotes = [
   }
 ];
 
+// Create mock data for the homeowner result
+const createMockHomeownerResult = (quote: any) => {
+  return {
+    initialInvestment: quote.totalInvestment,
+    monthlyPayment: quote.totalInvestment / quote.breakEvenMonths,
+    annualMaintenance: quote.totalInvestment * 0.02,
+    firstYearROI: quote.roiPercentage,
+    firstYearNetSavings: quote.annualSavings - (quote.totalInvestment * 0.02),
+    breakEvenMonths: quote.breakEvenMonths,
+    totalSavings: quote.annualSavings * 10, // 10-year savings
+    yearlyProjections: Array.from({ length: 10 }, (_, i) => ({
+      year: i + 1,
+      annualSavings: quote.annualSavings,
+      annualCost: quote.totalInvestment * 0.02 + (quote.totalInvestment / quote.breakEvenMonths) * 12,
+      netSavings: quote.annualSavings - (quote.totalInvestment * 0.02) - ((quote.totalInvestment / quote.breakEvenMonths) * 12)
+    }))
+  };
+};
+
 const Quote = () => {
   const { user, isAuthenticated } = useUser();
   const navigate = useNavigate();
   const [selectedQuote, setSelectedQuote] = useState(mockQuotes[0]);
   const [activeTab, setActiveTab] = useState("summary");
+  
+  // Create mock homeowner result from the selected quote
+  const mockHomeownerResult = createMockHomeownerResult(selectedQuote);
 
   // Redirect to login if not authenticated
   React.useEffect(() => {
@@ -62,6 +84,10 @@ const Quote = () => {
   }, [isAuthenticated, navigate]);
 
   if (!user) return null;
+  
+  const handleSendEmail = () => {
+    navigate("/send");
+  };
 
   return (
     <div className="min-h-screen bg-background flex">
@@ -128,28 +154,34 @@ const Quote = () => {
                   </TabsList>
                   
                   <TabsContent value="summary" className="mt-0">
-                    <QuoteSummary quote={selectedQuote} />
+                    <QuoteSummary 
+                      type="homeowner" 
+                      result={mockHomeownerResult} 
+                      onSendEmail={handleSendEmail} 
+                    />
                   </TabsContent>
                   
                   <TabsContent value="monthly" className="mt-0">
                     <QuoteChart 
+                      type="bar"
+                      title="Monthly Savings Projection"
                       data={selectedQuote.monthlyData} 
                       xKey="month" 
-                      yKey="value" 
-                      xLabel="Month" 
-                      yLabel="Savings ($)" 
-                      title="Monthly Savings Projection" 
+                      yKeys={[
+                        { key: "value", name: "Savings", color: "#2563eb" }
+                      ]}
                     />
                   </TabsContent>
                   
                   <TabsContent value="yearly" className="mt-0">
                     <QuoteChart 
+                      type="area"
+                      title="Yearly Savings Projection"
                       data={selectedQuote.yearlyData} 
                       xKey="year" 
-                      yKey="value" 
-                      xLabel="Year" 
-                      yLabel="Cumulative Savings ($)" 
-                      title="Yearly Savings Projection" 
+                      yKeys={[
+                        { key: "value", name: "Cumulative Savings", color: "#10b981" }
+                      ]}
                     />
                   </TabsContent>
                 </Tabs>
