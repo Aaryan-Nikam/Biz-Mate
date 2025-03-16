@@ -9,6 +9,7 @@ import { useUser } from "@/context/UserContext";
 import QuoteSummary from "@/components/QuoteSummary";
 import QuoteChart from "@/components/QuoteChart";
 import { Send, Download } from "lucide-react";
+import { HomeownerResult } from "@/utils/calculationUtils";
 
 // Mock quote data - in a real app, this would come from your database
 const mockQuotes = [
@@ -48,21 +49,27 @@ const mockQuotes = [
   }
 ];
 
-// Create mock data for the homeowner result
-const createMockHomeownerResult = (quote: any) => {
+// Create mock data for the homeowner result - making sure it matches HomeownerResult type
+const createMockHomeownerResult = (quote: any): HomeownerResult => {
+  const annualMaintenance = quote.totalInvestment * 0.02;
+  const monthlyPayment = quote.totalInvestment / quote.breakEvenMonths;
+  const loanTerm = Math.ceil(quote.breakEvenMonths / 12);
+  
   return {
-    initialInvestment: quote.totalInvestment,
-    monthlyPayment: quote.totalInvestment / quote.breakEvenMonths,
-    annualMaintenance: quote.totalInvestment * 0.02,
+    monthlyPayment: monthlyPayment,
+    annualMaintenance: annualMaintenance,
+    firstYearNetSavings: quote.annualSavings - annualMaintenance,
     firstYearROI: quote.roiPercentage,
-    firstYearNetSavings: quote.annualSavings - (quote.totalInvestment * 0.02),
     breakEvenMonths: quote.breakEvenMonths,
     totalSavings: quote.annualSavings * 10, // 10-year savings
+    totalCost: quote.totalInvestment + (annualMaintenance * 10), // Adding the missing property
     yearlyProjections: Array.from({ length: 10 }, (_, i) => ({
       year: i + 1,
       annualSavings: quote.annualSavings,
-      annualCost: quote.totalInvestment * 0.02 + (quote.totalInvestment / quote.breakEvenMonths) * 12,
-      netSavings: quote.annualSavings - (quote.totalInvestment * 0.02) - ((quote.totalInvestment / quote.breakEvenMonths) * 12)
+      annualCost: annualMaintenance + (monthlyPayment * 12),
+      netSavings: quote.annualSavings - annualMaintenance - (monthlyPayment * 12),
+      cumulativeReturn: (quote.annualSavings - annualMaintenance - (monthlyPayment * 12)) * (i + 1),
+      roi: quote.roiPercentage
     }))
   };
 };
