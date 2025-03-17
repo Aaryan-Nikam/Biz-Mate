@@ -16,7 +16,14 @@ import SolarDashboard from "./pages/SolarDashboard";
 import HVACDashboard from "./pages/HVACDashboard";
 import RemodelingDashboard from "./pages/RemodelingDashboard";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+      retry: 1,
+    },
+  },
+});
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -24,7 +31,7 @@ const App = () => (
       <BrowserRouter>
         <UserProvider>
           <Toaster />
-          <Sonner />
+          <Sonner position="top-right" closeButton />
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/login" element={<Login />} />
