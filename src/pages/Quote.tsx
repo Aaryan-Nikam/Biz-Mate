@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "@/context/UserContext";
@@ -53,7 +54,10 @@ const Quote = () => {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <InstantQuoteEstimator onComplete={() => setActiveTab("results")} />
+                  <InstantQuoteEstimator 
+                    niche={user.niche} 
+                    onComplete={() => setActiveTab("results")} 
+                  />
                 </CardContent>
               </Card>
             </TabsContent>

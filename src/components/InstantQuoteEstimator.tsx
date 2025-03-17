@@ -25,10 +25,11 @@ interface QuoteEstimateResult {
 }
 
 interface InstantQuoteEstimatorProps {
-  niche: NicheType;
+  niche?: NicheType;
+  onComplete?: () => void;
 }
 
-const InstantQuoteEstimator: React.FC<InstantQuoteEstimatorProps> = ({ niche }) => {
+const InstantQuoteEstimator: React.FC<InstantQuoteEstimatorProps> = ({ niche, onComplete }) => {
   const [isGenerating, setIsGenerating] = useState(false);
   const [quoteResult, setQuoteResult] = useState<QuoteEstimateResult | null>(null);
   const [activeTab, setActiveTab] = useState<string>("estimator");
@@ -66,7 +67,14 @@ const InstantQuoteEstimator: React.FC<InstantQuoteEstimatorProps> = ({ niche }) 
           timeframe: "standard"
         };
       default:
-        return {};
+        return {
+          // Default values for when no niche is selected
+          systemSize: 5,
+          roofType: "asphalt",
+          sunExposure: "full",
+          electricBill: 200,
+          financing: "cash"
+        };
     }
   });
 
@@ -104,19 +112,33 @@ const InstantQuoteEstimator: React.FC<InstantQuoteEstimatorProps> = ({ niche }) 
           break;
         default:
           result = {
-            totalCost: 0,
-            monthlyPayment: 0,
-            paybackPeriod: 0,
-            roi: 0,
-            savings: 0,
-            insights: [],
-            chartData: []
+            totalCost: 10000,
+            monthlyPayment: 200,
+            paybackPeriod: 5,
+            roi: 15,
+            savings: 2000,
+            insights: [
+              "This is a default quote estimation.",
+              "Select a specific niche for more accurate results.",
+              "The numbers shown are just for demonstration purposes."
+            ],
+            chartData: Array.from({ length: 10 }, (_, i) => ({
+              year: i + 1,
+              savings: 2000 * (i + 1),
+              investment: i === 0 ? 10000 : 0
+            }))
           };
       }
       
       setQuoteResult(result);
       setIsGenerating(false);
       setActiveTab("result"); // Auto-switch to result tab
+      
+      // Call onComplete callback if provided
+      if (onComplete) {
+        onComplete();
+      }
+      
       toast.success("Quote estimate generated successfully!");
     }, 1500);
   };
@@ -372,6 +394,14 @@ const InstantQuoteEstimator: React.FC<InstantQuoteEstimatorProps> = ({ niche }) 
   };
 
   const renderInputForm = () => {
+    if (!niche) {
+      return (
+        <div className="text-center py-8">
+          <p className="text-muted-foreground">Please select a niche to see the quote estimator options.</p>
+        </div>
+      );
+    }
+    
     switch (niche) {
       case "solar":
         return (
@@ -633,7 +663,7 @@ const InstantQuoteEstimator: React.FC<InstantQuoteEstimatorProps> = ({ niche }) 
     <Card className="w-full">
       <CardHeader>
         <CardTitle className="text-2xl">
-          Instant {niche.charAt(0).toUpperCase() + niche.slice(1)} Quote Estimator
+          Instant {niche ? `${niche.charAt(0).toUpperCase()}${niche.slice(1)}` : ""} Quote Estimator
         </CardTitle>
         <CardDescription>
           Generate a detailed quote estimate with AI insights based on your inputs
