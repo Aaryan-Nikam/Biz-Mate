@@ -11,6 +11,7 @@ import Signup from "./pages/Signup";
 import Dashboard from "./pages/Dashboard";
 import Calculator from "./pages/Calculator";
 import SendQuote from "./pages/SendQuote";
+import Quote from "./pages/Quote";
 import NotFound from "./pages/NotFound";
 import SolarDashboard from "./pages/SolarDashboard";
 import HVACDashboard from "./pages/HVACDashboard";
@@ -38,6 +39,7 @@ const App = () => (
             <Route path="/signup" element={<Signup />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/calculator" element={<Calculator />} />
+            <Route path="/quote" element={<Quote />} />
             <Route path="/send" element={<SendQuote />} />
             <Route path="/solar-dashboard" element={<SolarDashboard />} />
             <Route path="/hvac-dashboard" element={<HVACDashboard />} />

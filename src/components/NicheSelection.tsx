@@ -32,8 +32,8 @@ const NicheSelection: React.FC<NicheSelectionProps> = ({ onSelectNiche }) => {
       features: [
         "Calculate solar panel ROI and savings",
         "Estimate energy production and usage",
-        "Compare financing options for solar installation",
-        "Analyze long-term electricity bill reduction"
+        "Compare financing options",
+        "Analyze electricity bill reduction"
       ]
     },
     {
@@ -44,10 +44,10 @@ const NicheSelection: React.FC<NicheSelectionProps> = ({ onSelectNiche }) => {
       color: "text-blue-500",
       bgColor: "bg-blue-50",
       features: [
-        "Calculate HVAC system efficiency and savings",
+        "Calculate HVAC system efficiency",
         "Estimate seasonal usage and costs",
-        "Compare different HVAC system options",
-        "Analyze maintenance costs and long-term ROI"
+        "Compare different system options",
+        "Analyze maintenance costs and ROI"
       ]
     },
     {
@@ -58,10 +58,10 @@ const NicheSelection: React.FC<NicheSelectionProps> = ({ onSelectNiche }) => {
       color: "text-green-500",
       bgColor: "bg-green-50",
       features: [
-        "Calculate home remodeling ROI and property value increase",
+        "Calculate remodeling ROI",
         "Estimate materials and labor costs",
-        "Compare different renovation options and styles",
-        "Analyze financing options and project timeline"
+        "Compare renovation options",
+        "Analyze financing and timeline"
       ]
     }
   ];
@@ -97,7 +97,7 @@ const NicheSelection: React.FC<NicheSelectionProps> = ({ onSelectNiche }) => {
             whileHover={{ scale: 1.02 }}
             className="h-full"
           >
-            <Card className="h-full transition-all duration-300 hover:shadow-md">
+            <Card className="h-full transition-all duration-300 hover:shadow-md flex flex-col">
               <CardHeader className="pb-4">
                 <div className="flex justify-between items-center">
                   <Badge variant="outline" className={`${niche.bgColor} ${niche.color} hover:${niche.bgColor}`}>
@@ -108,21 +108,21 @@ const NicheSelection: React.FC<NicheSelectionProps> = ({ onSelectNiche }) => {
                   </div>
                 </div>
                 <CardTitle className="text-2xl mt-4">{niche.title}</CardTitle>
-                <CardDescription>{niche.description}</CardDescription>
+                <CardDescription className="line-clamp-2">{niche.description}</CardDescription>
               </CardHeader>
               
               <CardContent className="flex-grow">
                 <ul className="space-y-2">
                   {niche.features.map((feature, i) => (
-                    <li key={i} className="flex items-start gap-2">
+                    <li key={i} className="flex items-start gap-2 text-sm">
                       <span className="text-primary text-xl">•</span>
-                      <span>{feature}</span>
+                      <span className="line-clamp-1">{feature}</span>
                     </li>
                   ))}
                 </ul>
               </CardContent>
               
-              <CardFooter>
+              <CardFooter className="mt-auto">
                 <Button 
                   className="w-full"
                   onClick={() => handleNicheSelect(niche.id as NicheType)}

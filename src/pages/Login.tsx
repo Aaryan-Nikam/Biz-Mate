@@ -10,6 +10,7 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter }
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useUser } from "@/context/UserContext";
 import { ArrowLeft } from "lucide-react";
+import { toast } from "sonner";
 
 const loginSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email address" }),
@@ -31,10 +32,16 @@ const Login = () => {
     },
   });
 
-  const onSubmit = async (values: LoginValues) => {
+  const onSubmit = (values: LoginValues) => {
     setError(null);
     try {
-      await login(values.email, values.password);
+      const success = login(values.email, values.password);
+      if (success) {
+        toast.success("Login successful");
+        navigate("/dashboard");
+      } else {
+        setError("Failed to login. Please check your credentials.");
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to login");
     }

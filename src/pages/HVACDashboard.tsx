@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { useUser } from "@/context/UserContext";
 import Sidebar from "@/components/Sidebar";
 import { Button } from "@/components/ui/button";
-import { Calculator, Wind, ArrowLeft } from "lucide-react";
+import { Calculator, Wind, ArrowLeft, FileText } from "lucide-react";
 import { motion } from "framer-motion";
 
 const HVACDashboard = () => {
@@ -35,10 +35,10 @@ const HVACDashboard = () => {
         >
           <header className="mb-8 flex items-center justify-between">
             <div>
-              <h1 className="heading-1 mb-2 flex items-center">
+              <h1 className="text-3xl font-bold mb-2 flex items-center">
                 <Wind className="mr-2 text-blue-500" /> HVAC Dashboard
               </h1>
-              <p className="subheading">
+              <p className="text-muted-foreground">
                 Monitor and manage your HVAC installation projects
               </p>
             </div>
@@ -103,10 +103,10 @@ const HVACDashboard = () => {
             >
               <Card 
                 className="h-full border-2 transition-all cursor-pointer bg-primary/5 hover:border-primary/30 group-hover:shadow-md"
-                onClick={() => navigateToFeature("/send")}
+                onClick={() => navigateToFeature("/quote")}
               >
                 <CardHeader>
-                  <Wind className="h-8 w-8 text-blue-500 mb-2" />
+                  <FileText className="h-8 w-8 text-blue-500 mb-2" />
                   <CardTitle>HVAC Quote Estimator</CardTitle>
                   <CardDescription>
                     Generate detailed HVAC installation quotes

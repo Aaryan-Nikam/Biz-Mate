@@ -6,7 +6,7 @@ import { useUser } from "@/context/UserContext";
 import NicheSelection from "@/components/NicheSelection";
 import RoleSelection from "@/components/RoleSelection";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Calculator, Mail, Sun, Wind, HomeIcon } from "lucide-react";
+import { ArrowRight, Calculator, FileText, Sun, Wind, HomeIcon } from "lucide-react";
 
 const Index = () => {
   const { user, isAuthenticated, setUserRole, setUserNiche } = useUser();
@@ -79,7 +79,7 @@ const Index = () => {
                   className="bg-card border rounded-xl p-8 flex flex-col items-center text-center shadow-sm hover:shadow-md transition-all"
                 >
                   <div className="mb-6 p-4 bg-primary/10 rounded-full">
-                    <Mail className="h-10 w-10 text-primary" />
+                    <FileText className="h-10 w-10 text-primary" />
                   </div>
                   <h3 className="text-xl font-semibold mb-3">Service Provider</h3>
                   <p className="text-muted-foreground mb-6">
@@ -108,7 +108,7 @@ const Index = () => {
                     <Sun className="h-12 w-12 text-yellow-500" />
                     <div className="flex flex-col items-center">
                       <h3 className="text-lg font-bold">Solar</h3>
-                      <p className="text-sm text-muted-foreground mt-2 line-clamp-2">
+                      <p className="text-sm text-muted-foreground mt-2 text-center px-2">
                         Solar panel installation and efficiency calculation
                       </p>
                     </div>
@@ -124,7 +124,7 @@ const Index = () => {
                     <Wind className="h-12 w-12 text-blue-500" />
                     <div className="flex flex-col items-center">
                       <h3 className="text-lg font-bold">HVAC</h3>
-                      <p className="text-sm text-muted-foreground mt-2 line-clamp-2">
+                      <p className="text-sm text-muted-foreground mt-2 text-center px-2">
                         Heating, ventilation, and cooling systems
                       </p>
                     </div>
@@ -140,7 +140,7 @@ const Index = () => {
                     <HomeIcon className="h-12 w-12 text-green-500" />
                     <div className="flex flex-col items-center">
                       <h3 className="text-lg font-bold">Remodeling</h3>
-                      <p className="text-sm text-muted-foreground mt-2 line-clamp-2">
+                      <p className="text-sm text-muted-foreground mt-2 text-center px-2">
                         Home renovation and remodeling projects
                       </p>
                     </div>
@@ -169,9 +169,9 @@ const Index = () => {
               <motion.div 
                 whileHover={{ scale: 1.02 }}
                 className="bg-primary/5 border border-primary/10 rounded-xl p-8 cursor-pointer"
-                onClick={() => navigateToFeature("/send")}
+                onClick={() => navigateToFeature("/quote")}
               >
-                <Mail className="h-8 w-8 text-primary mb-4" />
+                <FileText className="h-8 w-8 text-primary mb-4" />
                 <h3 className="text-xl font-semibold mb-2">Instant Quote Estimator</h3>
                 <p className="text-muted-foreground">
                   Generate professional quotes to send to clients or estimate project costs.

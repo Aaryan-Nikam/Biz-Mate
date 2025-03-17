@@ -15,7 +15,8 @@ import {
   Mail,
   Sun,
   Wind,
-  HomeIcon
+  HomeIcon,
+  FileText
 } from "lucide-react";
 import { useUser } from "@/context/UserContext";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -114,6 +115,11 @@ const Sidebar: React.FC = () => {
       icon: Calculator, 
       label: "ROI Calculator", 
       path: "/calculator" 
+    },
+    { 
+      icon: FileText, 
+      label: "Quote Estimator", 
+      path: "/quote" 
     },
     { 
       icon: Mail, 
