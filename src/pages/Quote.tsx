@@ -7,6 +7,8 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { motion } from "framer-motion";
 import InstantQuoteEstimator from "@/components/InstantQuoteEstimator";
+import { Button } from "@/components/ui/button";
+import { Send } from "lucide-react";
 
 const Quote = () => {
   const { user } = useUser();
@@ -21,6 +23,10 @@ const Quote = () => {
   }, [user, navigate]);
 
   if (!user) return null;
+
+  const handleQuoteComplete = () => {
+    setActiveTab("results");
+  };
 
   return (
     <div className="min-h-screen bg-background flex">
@@ -56,7 +62,7 @@ const Quote = () => {
                 <CardContent>
                   <InstantQuoteEstimator 
                     niche={user.niche} 
-                    onComplete={() => setActiveTab("results")} 
+                    onComplete={handleQuoteComplete} 
                   />
                 </CardContent>
               </Card>
@@ -70,8 +76,32 @@ const Quote = () => {
                     Your estimated quote results and analysis
                   </CardDescription>
                 </CardHeader>
-                <CardContent>
-                  {/* This content will be populated by the InstantQuoteEstimator component */}
+                <CardContent className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="bg-primary/10 rounded-lg p-4 flex flex-col items-center justify-center">
+                      <p className="text-sm text-muted-foreground">Total Cost</p>
+                      <p className="text-3xl font-bold">$10,000</p>
+                      <p className="text-xs text-muted-foreground">or $200/month</p>
+                    </div>
+                    
+                    <div className="bg-primary/10 rounded-lg p-4 flex flex-col items-center justify-center">
+                      <p className="text-sm text-muted-foreground">Annual Savings</p>
+                      <p className="text-3xl font-bold">$2,000</p>
+                      <p className="text-xs text-muted-foreground">$167/month</p>
+                    </div>
+                    
+                    <div className="bg-primary/10 rounded-lg p-4 flex flex-col items-center justify-center">
+                      <p className="text-sm text-muted-foreground">Payback Period</p>
+                      <p className="text-3xl font-bold">5 years</p>
+                      <p className="text-xs text-muted-foreground">ROI: 15%</p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex justify-end">
+                    <Button onClick={() => navigate("/send-quote")}>
+                      <Send className="mr-2 h-4 w-4" /> Send Quote
+                    </Button>
+                  </div>
                 </CardContent>
               </Card>
             </TabsContent>
