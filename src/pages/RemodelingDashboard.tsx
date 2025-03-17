@@ -1,137 +1,127 @@
 
-import React, { useEffect } from "react";
+import React from "react";
 import { useNavigate } from "react-router-dom";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useUser } from "@/context/UserContext";
 import Sidebar from "@/components/Sidebar";
-import { HomeIcon, Hammer, TrendingUp, BarChart, PenTool } from "lucide-react";
-import InstantQuoteEstimator from "@/components/InstantQuoteEstimator";
+import { Button } from "@/components/ui/button";
+import { Calculator, HomeIcon, ArrowLeft } from "lucide-react";
+import { motion } from "framer-motion";
 
 const RemodelingDashboard = () => {
-  const { user, isAuthenticated } = useUser();
+  const { user, clearUserNiche } = useUser();
   const navigate = useNavigate();
 
-  // Redirect to login if not authenticated
-  useEffect(() => {
-    if (!isAuthenticated) {
-      navigate("/login");
-    } else if (user?.niche !== "remodeling") {
-      navigate("/dashboard");
-    }
-  }, [isAuthenticated, navigate, user]);
-
   if (!user) return null;
+
+  const handleBackToDashboard = () => {
+    clearUserNiche();
+    navigate("/dashboard");
+  };
+
+  const navigateToFeature = (path: string) => {
+    navigate(path);
+  };
 
   return (
     <div className="min-h-screen bg-background flex">
       <Sidebar />
       
       <div className="flex-1 ml-16 md:ml-64 p-6">
-        <header className="mb-8">
-          <div className="flex items-center gap-2 mb-2">
-            <HomeIcon className="h-6 w-6 text-green-500" />
-            <h1 className="heading-1">Remodeling Dashboard</h1>
-          </div>
-          <p className="subheading">
-            Generate remodeling quotes and track project information
-          </p>
-        </header>
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+        >
+          <header className="mb-8 flex items-center justify-between">
+            <div>
+              <h1 className="heading-1 mb-2 flex items-center">
+                <HomeIcon className="mr-2 text-green-500" /> Remodeling Dashboard
+              </h1>
+              <p className="subheading">
+                Monitor and manage your home remodeling projects
+              </p>
+            </div>
+            <Button variant="outline" size="sm" onClick={handleBackToDashboard}>
+              <ArrowLeft className="mr-1 h-4 w-4" /> Change Industry
+            </Button>
+          </header>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <Card className="bg-gradient-to-br from-green-50 to-emerald-50">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-lg">Home Value Estimate</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold">$450,000</div>
-              <p className="text-sm text-muted-foreground">+5.2% YoY appreciation</p>
-            </CardContent>
-          </Card>
-          
-          <Card className="bg-gradient-to-br from-indigo-50 to-purple-50">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-lg">Renovation Budget</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold">$85,000</div>
-              <p className="text-sm text-muted-foreground">For kitchen and bath remodel</p>
-            </CardContent>
-          </Card>
-          
-          <Card className="bg-gradient-to-br from-amber-50 to-yellow-50">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-lg">ROI Potential</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold">72%</div>
-              <p className="text-sm text-muted-foreground">Based on local market trends</p>
-            </CardContent>
-          </Card>
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-8">
-          <div className="lg:col-span-1">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
             <Card>
               <CardHeader className="pb-2">
-                <CardTitle>Remodeling Tips</CardTitle>
+                <CardTitle className="text-2xl">350 sq ft</CardTitle>
+                <CardDescription>Average Project Size</CardDescription>
               </CardHeader>
-              <CardContent>
-                <ul className="space-y-3">
-                  <li className="flex items-start gap-2">
-                    <Badge variant="outline" className="bg-green-100 text-green-700 hover:bg-green-100">Tip</Badge>
-                    <p className="text-sm">Kitchen remodels typically return 70-80% of cost in home value</p>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <Badge variant="outline" className="bg-amber-100 text-amber-700 hover:bg-amber-100">Trend</Badge>
-                    <p className="text-sm">Open concept designs remain popular for maximizing space</p>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <Badge variant="outline" className="bg-blue-100 text-blue-700 hover:bg-blue-100">Budget</Badge>
-                    <p className="text-sm">Plan for 10-15% contingency for unexpected expenses</p>
-                  </li>
-                </ul>
-              </CardContent>
             </Card>
-          </div>
-          
-          <div className="lg:col-span-3">
+            
             <Card>
               <CardHeader className="pb-2">
-                <CardTitle>Market Value Trends</CardTitle>
+                <CardTitle className="text-2xl">$22,500</CardTitle>
+                <CardDescription>Average Project Cost</CardDescription>
               </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-                  <div className="flex flex-col">
-                    <span className="text-sm text-muted-foreground">Home Type</span>
-                    <span className="font-semibold">Single Family, 3BR/2BA</span>
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="text-sm text-muted-foreground">Square Footage</span>
-                    <span className="font-semibold">2,200 sq ft</span>
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="text-sm text-muted-foreground">Neighborhood Avg.</span>
-                    <span className="font-semibold">$475,000</span>
-                  </div>
-                </div>
-                
-                <div className="flex justify-center items-center h-[200px] bg-muted/50 rounded-lg">
-                  <div className="text-center text-muted-foreground">
-                    <BarChart className="h-8 w-8 mx-auto mb-2" />
-                    <p>Home value trend chart would appear here</p>
-                  </div>
-                </div>
-              </CardContent>
+            </Card>
+            
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-2xl">65%</CardTitle>
+                <CardDescription>Average ROI on Remodeling</CardDescription>
+              </CardHeader>
             </Card>
           </div>
-        </div>
 
-        <section className="mb-8">
-          <h2 className="text-2xl font-bold mb-6">Remodeling Quote Estimator</h2>
-          <InstantQuoteEstimator niche="remodeling" />
-        </section>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <motion.div 
+              whileHover={{ scale: 1.02 }}
+              transition={{ duration: 0.2 }}
+              className="group"
+            >
+              <Card 
+                className="h-full border-2 transition-all cursor-pointer bg-primary/5 hover:border-primary/30 group-hover:shadow-md"
+                onClick={() => navigateToFeature("/calculator")}
+              >
+                <CardHeader>
+                  <Calculator className="h-8 w-8 text-primary mb-2" />
+                  <CardTitle>Remodeling ROI Calculator</CardTitle>
+                  <CardDescription>
+                    Calculate remodeling project ROI and property value increase
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground">
+                    Input your project details, costs, and materials to get a detailed ROI analysis with property value increase estimates.
+                  </p>
+                  <Button className="mt-4 w-full">Open Calculator</Button>
+                </CardContent>
+              </Card>
+            </motion.div>
+            
+            <motion.div 
+              whileHover={{ scale: 1.02 }}
+              transition={{ duration: 0.2 }}
+              className="group"
+            >
+              <Card 
+                className="h-full border-2 transition-all cursor-pointer bg-primary/5 hover:border-primary/30 group-hover:shadow-md"
+                onClick={() => navigateToFeature("/send")}
+              >
+                <CardHeader>
+                  <HomeIcon className="h-8 w-8 text-green-500 mb-2" />
+                  <CardTitle>Remodeling Quote Estimator</CardTitle>
+                  <CardDescription>
+                    Generate detailed remodeling project quotes
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground">
+                    Create professional remodeling quotes with materials, labor, and timeline estimates. Email quotes directly to clients.
+                  </p>
+                  <Button className="mt-4 w-full">Create Quote</Button>
+                </CardContent>
+              </Card>
+            </motion.div>
+          </div>
+        </motion.div>
       </div>
     </div>
   );

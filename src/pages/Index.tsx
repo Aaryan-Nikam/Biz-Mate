@@ -6,10 +6,10 @@ import { useUser } from "@/context/UserContext";
 import NicheSelection from "@/components/NicheSelection";
 import RoleSelection from "@/components/RoleSelection";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Calculator, Mail } from "lucide-react";
+import { ArrowRight, Calculator, Mail, Sun, Wind, HomeIcon } from "lucide-react";
 
 const Index = () => {
-  const { user, isAuthenticated, setUserRole } = useUser();
+  const { user, isAuthenticated, setUserRole, setUserNiche } = useUser();
   const navigate = useNavigate();
 
   // If user is already authenticated, redirect to dashboard
@@ -25,7 +25,12 @@ const Index = () => {
   };
 
   const handleNicheSelect = (niche: "solar" | "hvac" | "remodeling") => {
+    setUserNiche(niche);
     navigate("/login");
+  };
+
+  const navigateToFeature = (path: string) => {
+    navigate(path);
   };
 
   return (
@@ -93,9 +98,87 @@ const Index = () => {
           ) : (
             <div className="w-full max-w-5xl">
               <h2 className="text-2xl font-semibold mb-8">Select your industry</h2>
-              <NicheSelection onSelectNiche={handleNicheSelect} />
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <motion.div whileHover={{ scale: 1.03 }} transition={{ duration: 0.2 }}>
+                  <Button 
+                    onClick={() => handleNicheSelect("solar")}
+                    variant="outline" 
+                    className="h-48 w-full flex flex-col gap-4 p-6 hover:border-yellow-500/30 hover:bg-yellow-500/5"
+                  >
+                    <Sun className="h-12 w-12 text-yellow-500" />
+                    <div className="flex flex-col items-center">
+                      <h3 className="text-lg font-bold">Solar</h3>
+                      <p className="text-sm text-muted-foreground mt-2 line-clamp-2">
+                        Solar panel installation and efficiency calculation
+                      </p>
+                    </div>
+                  </Button>
+                </motion.div>
+                
+                <motion.div whileHover={{ scale: 1.03 }} transition={{ duration: 0.2 }}>
+                  <Button 
+                    onClick={() => handleNicheSelect("hvac")}
+                    variant="outline" 
+                    className="h-48 w-full flex flex-col gap-4 p-6 hover:border-blue-500/30 hover:bg-blue-500/5"
+                  >
+                    <Wind className="h-12 w-12 text-blue-500" />
+                    <div className="flex flex-col items-center">
+                      <h3 className="text-lg font-bold">HVAC</h3>
+                      <p className="text-sm text-muted-foreground mt-2 line-clamp-2">
+                        Heating, ventilation, and cooling systems
+                      </p>
+                    </div>
+                  </Button>
+                </motion.div>
+                
+                <motion.div whileHover={{ scale: 1.03 }} transition={{ duration: 0.2 }}>
+                  <Button 
+                    onClick={() => handleNicheSelect("remodeling")}
+                    variant="outline" 
+                    className="h-48 w-full flex flex-col gap-4 p-6 hover:border-green-500/30 hover:bg-green-500/5"
+                  >
+                    <HomeIcon className="h-12 w-12 text-green-500" />
+                    <div className="flex flex-col items-center">
+                      <h3 className="text-lg font-bold">Remodeling</h3>
+                      <p className="text-sm text-muted-foreground mt-2 line-clamp-2">
+                        Home renovation and remodeling projects
+                      </p>
+                    </div>
+                  </Button>
+                </motion.div>
+              </div>
             </div>
           )}
+
+          {/* App Features */}
+          <div className="w-full max-w-5xl mt-16">
+            <h2 className="text-2xl font-semibold mb-8">App Features</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <motion.div 
+                whileHover={{ scale: 1.02 }}
+                className="bg-primary/5 border border-primary/10 rounded-xl p-8 cursor-pointer"
+                onClick={() => navigateToFeature("/calculator")}
+              >
+                <Calculator className="h-8 w-8 text-primary mb-4" />
+                <h3 className="text-xl font-semibold mb-2">ROI Calculator</h3>
+                <p className="text-muted-foreground">
+                  Calculate return on investment for projects with detailed analysis and visualizations.
+                </p>
+              </motion.div>
+              
+              <motion.div 
+                whileHover={{ scale: 1.02 }}
+                className="bg-primary/5 border border-primary/10 rounded-xl p-8 cursor-pointer"
+                onClick={() => navigateToFeature("/send")}
+              >
+                <Mail className="h-8 w-8 text-primary mb-4" />
+                <h3 className="text-xl font-semibold mb-2">Instant Quote Estimator</h3>
+                <p className="text-muted-foreground">
+                  Generate professional quotes to send to clients or estimate project costs.
+                </p>
+              </motion.div>
+            </div>
+          </div>
 
           {/* Login link */}
           <div className="mt-12 text-center">

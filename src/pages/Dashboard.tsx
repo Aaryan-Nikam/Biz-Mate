@@ -5,12 +5,13 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useUser } from "@/context/UserContext";
 import Sidebar from "@/components/Sidebar";
-import { BarChart3, Calculator, Mail, ArrowRight, Sun, Wind, HomeIcon } from "lucide-react";
+import { BarChart3, Calculator, Mail, ArrowRight, Sun, Wind, HomeIcon, ArrowLeft } from "lucide-react";
 import { NicheType } from "@/components/NicheSelection";
 import { motion } from "framer-motion";
+import { toast } from "sonner";
 
 const Dashboard = () => {
-  const { user, isAuthenticated, setUserNiche } = useUser();
+  const { user, isAuthenticated, setUserNiche, clearUserNiche } = useUser();
   const navigate = useNavigate();
 
   // Redirect to login if not authenticated
@@ -35,21 +36,9 @@ const Dashboard = () => {
 
   if (!user) return null;
 
-  const getNicheIcon = (niche?: NicheType) => {
-    switch (niche) {
-      case "solar":
-        return <Sun className="h-12 w-12 text-yellow-500" />;
-      case "hvac":
-        return <Wind className="h-12 w-12 text-blue-500" />;
-      case "remodeling":
-        return <HomeIcon className="h-12 w-12 text-green-500" />;
-      default:
-        return <Calculator className="h-12 w-12 text-blue-500" />;
-    }
-  };
-
   const handleNicheSelect = (niche: NicheType) => {
     setUserNiche(niche);
+    toast.success(`${niche.charAt(0).toUpperCase() + niche.slice(1)} selected as your industry!`);
     
     switch (niche) {
       case "solar":
@@ -62,6 +51,14 @@ const Dashboard = () => {
         navigate("/remodeling-dashboard");
         break;
     }
+  };
+
+  const handleNavigateToFeature = (path: string) => {
+    if (!user.niche) {
+      toast.error("Please select an industry first");
+      return;
+    }
+    navigate(path);
   };
 
   // This is the generic dashboard for users who haven't selected a niche yet
@@ -96,10 +93,10 @@ const Dashboard = () => {
                       className="h-48 w-full flex flex-col gap-4 p-6 hover:border-yellow-500/30 hover:bg-yellow-500/5"
                     >
                       <Sun className="h-12 w-12 text-yellow-500" />
-                      <div>
+                      <div className="flex flex-col items-center">
                         <h3 className="text-lg font-bold">Solar</h3>
-                        <p className="text-sm text-muted-foreground mt-2">
-                          Solar panel installation and efficiency calculations
+                        <p className="text-sm text-muted-foreground mt-2 line-clamp-2">
+                          Solar panel installation and efficiency calculation
                         </p>
                       </div>
                     </Button>
@@ -112,9 +109,9 @@ const Dashboard = () => {
                       className="h-48 w-full flex flex-col gap-4 p-6 hover:border-blue-500/30 hover:bg-blue-500/5"
                     >
                       <Wind className="h-12 w-12 text-blue-500" />
-                      <div>
+                      <div className="flex flex-col items-center">
                         <h3 className="text-lg font-bold">HVAC</h3>
-                        <p className="text-sm text-muted-foreground mt-2">
+                        <p className="text-sm text-muted-foreground mt-2 line-clamp-2">
                           Heating, ventilation, and cooling systems
                         </p>
                       </div>
@@ -128,9 +125,9 @@ const Dashboard = () => {
                       className="h-48 w-full flex flex-col gap-4 p-6 hover:border-green-500/30 hover:bg-green-500/5"
                     >
                       <HomeIcon className="h-12 w-12 text-green-500" />
-                      <div>
+                      <div className="flex flex-col items-center">
                         <h3 className="text-lg font-bold">Remodeling</h3>
-                        <p className="text-sm text-muted-foreground mt-2">
+                        <p className="text-sm text-muted-foreground mt-2 line-clamp-2">
                           Home renovation and remodeling projects
                         </p>
                       </div>
@@ -146,7 +143,10 @@ const Dashboard = () => {
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <Card className="bg-primary/5 border-primary/10">
+                  <Card 
+                    className="bg-primary/5 border-primary/10 cursor-pointer hover:shadow-md transition-all"
+                    onClick={() => handleNavigateToFeature("/calculator")}
+                  >
                     <CardHeader>
                       <Calculator className="h-6 w-6 text-primary mb-2" />
                       <CardTitle className="text-lg">ROI Calculator</CardTitle>
@@ -158,7 +158,10 @@ const Dashboard = () => {
                     </CardContent>
                   </Card>
                   
-                  <Card className="bg-primary/5 border-primary/10">
+                  <Card 
+                    className="bg-primary/5 border-primary/10 cursor-pointer hover:shadow-md transition-all"
+                    onClick={() => handleNavigateToFeature("/send")}
+                  >
                     <CardHeader>
                       <Mail className="h-6 w-6 text-primary mb-2" />
                       <CardTitle className="text-lg">Instant Quote Estimator</CardTitle>

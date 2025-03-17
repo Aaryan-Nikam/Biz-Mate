@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -32,6 +31,7 @@ interface InstantQuoteEstimatorProps {
 const InstantQuoteEstimator: React.FC<InstantQuoteEstimatorProps> = ({ niche }) => {
   const [isGenerating, setIsGenerating] = useState(false);
   const [quoteResult, setQuoteResult] = useState<QuoteEstimateResult | null>(null);
+  const [activeTab, setActiveTab] = useState<string>("estimator");
   const [customerInfo, setCustomerInfo] = useState({
     name: "",
     email: "",
@@ -116,6 +116,7 @@ const InstantQuoteEstimator: React.FC<InstantQuoteEstimatorProps> = ({ niche }) 
       
       setQuoteResult(result);
       setIsGenerating(false);
+      setActiveTab("result"); // Auto-switch to result tab
       toast.success("Quote estimate generated successfully!");
     }, 1500);
   };
@@ -640,7 +641,7 @@ const InstantQuoteEstimator: React.FC<InstantQuoteEstimatorProps> = ({ niche }) 
       </CardHeader>
       
       <CardContent>
-        <Tabs defaultValue="estimator" className="w-full">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="estimator">Quote Estimator</TabsTrigger>
             <TabsTrigger value="result" disabled={!quoteResult}>

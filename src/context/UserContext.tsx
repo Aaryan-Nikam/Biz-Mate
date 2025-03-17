@@ -1,186 +1,100 @@
-
-import React, { createContext, useState, useContext, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { toast } from "sonner";
-import { NicheType } from "@/components/NicheSelection";
-
-type UserRole = "homeowner" | "provider" | null;
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import { NicheType } from '@/components/NicheSelection';
 
 interface User {
   id: string;
+  name: string;
   email: string;
-  role: UserRole;
+  role: 'homeowner' | 'provider';
   niche?: NicheType;
 }
 
 interface UserContextType {
   user: User | null;
-  isAuthenticated: boolean;
   isLoading: boolean;
-  login: (email: string, password: string) => Promise<void>;
-  signup: (email: string, password: string, role: UserRole) => Promise<void>;
+  isAuthenticated: boolean;
+  login: (email: string, password: string) => boolean;
   logout: () => void;
-  setUserRole: (role: UserRole) => void;
+  signup: (name: string, email: string, password: string) => boolean;
+  setUserRole: (role: 'homeowner' | 'provider') => void;
   setUserNiche: (niche: NicheType) => void;
+  clearUserNiche: () => void;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
+export const useUser = () => {
+  const context = useContext(UserContext);
+  if (!context) {
+    throw new Error('useUser must be used within a UserProvider');
+  }
+  return context;
+};
+
 export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const navigate = useNavigate();
 
-  // Check for stored user on mount
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
-    setIsLoading(false);
+    // Simulate checking for a user session
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 1000);
   }, []);
 
-  // Mock login function (will be replaced with Supabase)
-  const login = async (email: string, password: string) => {
-    setIsLoading(true);
-    try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      
-      // Check if user exists in localStorage (mock)
-      const storedUsers = JSON.parse(localStorage.getItem("users") || "[]");
-      const foundUser = storedUsers.find((u: any) => u.email === email);
-      
-      if (!foundUser || foundUser.password !== password) {
-        throw new Error("Invalid email or password");
-      }
-      
-      // Create authenticated user
-      const authenticatedUser = {
-        id: foundUser.id,
-        email: foundUser.email,
-        role: foundUser.role,
-        niche: foundUser.niche
-      };
-      
-      // Save to state and localStorage
-      setUser(authenticatedUser);
-      localStorage.setItem("user", JSON.stringify(authenticatedUser));
-      
-      toast.success("Login successful!");
-      navigate("/dashboard");
-    } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Login failed");
-      console.error("Login error:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  // Mock signup function (will be replaced with Supabase)
-  const signup = async (email: string, password: string, role: UserRole) => {
-    setIsLoading(true);
-    try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      
-      // Check if user already exists
-      const storedUsers = JSON.parse(localStorage.getItem("users") || "[]");
-      if (storedUsers.some((u: any) => u.email === email)) {
-        throw new Error("User already exists");
-      }
-      
-      // Check for temp role/niche in localStorage
-      const tempUser = JSON.parse(localStorage.getItem("tempUser") || "{}");
-      
-      // Create new user
-      const newUser = {
-        id: Date.now().toString(),
-        email,
-        password,
-        role: role || tempUser.role,
-        niche: tempUser.niche
-      };
-      
-      // Save to localStorage
-      localStorage.setItem("users", JSON.stringify([...storedUsers, newUser]));
-      
-      // Clear temp user
-      localStorage.removeItem("tempUser");
-      
-      toast.success("Signup successful! Please log in.");
-      navigate("/login");
-    } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Signup failed");
-      console.error("Signup error:", error);
-    } finally {
-      setIsLoading(false);
-    }
+  const login = (email: string, password: string) => {
+    // In a real app, this would call an API
+    setUser({
+      id: '1',
+      name: 'Demo User',
+      email,
+      role: user?.role || 'homeowner',
+      niche: user?.niche
+    });
+    return true;
   };
 
   const logout = () => {
     setUser(null);
-    localStorage.removeItem("user");
-    toast.success("Logged out successfully");
-    navigate("/");
   };
 
-  const setUserRole = (role: UserRole) => {
-    // Store temporarily for users who haven't signed up yet
-    const tempUser = JSON.parse(localStorage.getItem("tempUser") || "{}");
-    localStorage.setItem("tempUser", JSON.stringify({ ...tempUser, role }));
-    
-    if (user) {
-      const updatedUser = { ...user, role };
-      setUser(updatedUser);
-      localStorage.setItem("user", JSON.stringify(updatedUser));
-      
-      // Update in users array too
-      const storedUsers = JSON.parse(localStorage.getItem("users") || "[]");
-      const updatedUsers = storedUsers.map((u: any) => 
-        u.id === user.id ? { ...u, role } : u
-      );
-      localStorage.setItem("users", JSON.stringify(updatedUsers));
-    }
+  const signup = (name: string, email: string, password: string) => {
+    // In a real app, this would call an API
+    setUser({
+      id: '1',
+      name,
+      email,
+      role: user?.role || 'homeowner',
+      niche: user?.niche
+    });
+    return true;
+  };
+
+  const setUserRole = (role: 'homeowner' | 'provider') => {
+    setUser(prev => prev ? { ...prev, role } : { id: '1', name: 'Guest', email: '', role });
   };
 
   const setUserNiche = (niche: NicheType) => {
-    // Store temporarily for users who haven't signed up yet
-    const tempUser = JSON.parse(localStorage.getItem("tempUser") || "{}");
-    localStorage.setItem("tempUser", JSON.stringify({ ...tempUser, niche }));
-    
-    if (user) {
-      const updatedUser = { ...user, niche };
-      setUser(updatedUser);
-      localStorage.setItem("user", JSON.stringify(updatedUser));
-      
-      // Update in users array too
-      const storedUsers = JSON.parse(localStorage.getItem("users") || "[]");
-      const updatedUsers = storedUsers.map((u: any) => 
-        u.id === user.id ? { ...u, niche } : u
-      );
-      localStorage.setItem("users", JSON.stringify(updatedUsers));
-    }
+    setUser(prev => prev ? { ...prev, niche } : { id: '1', name: 'Guest', email: '', role: 'homeowner', niche });
+  };
+  
+  const clearUserNiche = () => {
+    setUser(prev => prev ? { ...prev, niche: undefined } : null);
   };
 
-  const value = {
-    user,
-    isAuthenticated: !!user,
-    isLoading,
-    login,
-    signup,
-    logout,
-    setUserRole,
-    setUserNiche
-  };
-
-  return <UserContext.Provider value={value}>{children}</UserContext.Provider>;
-};
-
-export const useUser = (): UserContextType => {
-  const context = useContext(UserContext);
-  if (context === undefined) {
-    throw new Error("useUser must be used within a UserProvider");
-  }
-  return context;
+  return (
+    <UserContext.Provider value={{ 
+      user, 
+      isLoading, 
+      isAuthenticated: !!user, 
+      login, 
+      logout, 
+      signup, 
+      setUserRole,
+      setUserNiche,
+      clearUserNiche
+    }}>
+      {children}
+    </UserContext.Provider>
+  );
 };
