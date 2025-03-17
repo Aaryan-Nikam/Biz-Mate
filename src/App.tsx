@@ -10,6 +10,7 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Dashboard from "./pages/Dashboard";
 import Calculator from "./pages/Calculator";
+import ProjectCalculator from "./pages/ProjectCalculator";
 import SendQuote from "./pages/SendQuote";
 import Quote from "./pages/Quote";
 import NotFound from "./pages/NotFound";
@@ -39,6 +40,7 @@ const App = () => (
             <Route path="/signup" element={<Signup />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/calculator" element={<Calculator />} />
+            <Route path="/project-calculator" element={<ProjectCalculator />} />
             <Route path="/quote" element={<Quote />} />
             <Route path="/send" element={<SendQuote />} />
             <Route path="/solar-dashboard" element={<SolarDashboard />} />

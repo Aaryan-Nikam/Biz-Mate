@@ -16,7 +16,8 @@ import {
   Sun,
   Wind,
   HomeIcon,
-  FileText
+  FileText,
+  TrendingUp
 } from "lucide-react";
 import { useUser } from "@/context/UserContext";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -103,14 +104,18 @@ const Sidebar: React.FC = () => {
     }
   };
 
-  const navItems = [
+  // Organize nav items into categories
+  const mainNavItems = [
     { 
       icon: getNicheIcon(user?.niche), 
       label: user?.niche 
         ? `${user.niche.charAt(0).toUpperCase() + user.niche.slice(1)} Dashboard` 
         : "Dashboard", 
       path: getNicheDashboardPath(user?.niche)
-    },
+    }
+  ];
+
+  const featureNavItems = [
     { 
       icon: Calculator, 
       label: "ROI Calculator", 
@@ -125,7 +130,10 @@ const Sidebar: React.FC = () => {
       icon: Mail, 
       label: "Send Quote", 
       path: "/send" 
-    },
+    }
+  ];
+
+  const accountNavItems = [
     { 
       icon: User, 
       label: "My Account", 
@@ -171,18 +179,54 @@ const Sidebar: React.FC = () => {
           </div>
         )}
 
-        <nav className="space-y-0.5">
-          {navItems.map((item) => (
-            <NavItem
-              key={item.path}
-              icon={item.icon}
-              label={item.label}
-              path={item.path}
-              isActive={location.pathname === item.path}
-              onClick={() => navigate(item.path)}
-              collapsed={collapsed}
-            />
-          ))}
+        <nav className="space-y-4">
+          {/* Main Navigation */}
+          <div>
+            {!collapsed && <div className="px-3 text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">Main</div>}
+            {mainNavItems.map((item) => (
+              <NavItem
+                key={item.path}
+                icon={item.icon}
+                label={item.label}
+                path={item.path}
+                isActive={location.pathname === item.path}
+                onClick={() => navigate(item.path)}
+                collapsed={collapsed}
+              />
+            ))}
+          </div>
+
+          {/* Features Navigation */}
+          <div>
+            {!collapsed && <div className="px-3 text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">Features</div>}
+            {featureNavItems.map((item) => (
+              <NavItem
+                key={item.path}
+                icon={item.icon}
+                label={item.label}
+                path={item.path}
+                isActive={location.pathname === item.path}
+                onClick={() => navigate(item.path)}
+                collapsed={collapsed}
+              />
+            ))}
+          </div>
+
+          {/* Account Navigation */}
+          <div>
+            {!collapsed && <div className="px-3 text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">Account</div>}
+            {accountNavItems.map((item) => (
+              <NavItem
+                key={item.path}
+                icon={item.icon}
+                label={item.label}
+                path={item.path}
+                isActive={location.pathname === item.path}
+                onClick={() => navigate(item.path)}
+                collapsed={collapsed}
+              />
+            ))}
+          </div>
         </nav>
 
         <div className="mt-auto">

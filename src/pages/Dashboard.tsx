@@ -1,18 +1,21 @@
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { useUser } from "@/context/UserContext";
 import Sidebar from "@/components/Sidebar";
-import { BarChart3, Calculator, Mail, ArrowRight, Sun, Wind, HomeIcon, ArrowLeft } from "lucide-react";
+import { BarChart3, Calculator, Mail, FileText, Sun, Wind, HomeIcon, ArrowLeft } from "lucide-react";
 import { NicheType } from "@/components/NicheSelection";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 
 const Dashboard = () => {
   const { user, isAuthenticated, setUserNiche, clearUserNiche } = useUser();
   const navigate = useNavigate();
+  const [nicheDialogOpen, setNicheDialogOpen] = useState(false);
+  const [selectedFeature, setSelectedFeature] = useState<"calculator" | "quote" | null>(null);
 
   // Redirect to login if not authenticated
   useEffect(() => {
@@ -36,29 +39,46 @@ const Dashboard = () => {
 
   if (!user) return null;
 
+  const handleFeatureSelect = (feature: "calculator" | "quote") => {
+    if (user.niche) {
+      // If user already has a niche, navigate directly to the feature
+      if (feature === "calculator") {
+        navigate("/calculator");
+      } else {
+        navigate("/quote");
+      }
+    } else {
+      // Open niche selection dialog
+      setSelectedFeature(feature);
+      setNicheDialogOpen(true);
+    }
+  };
+
   const handleNicheSelect = (niche: NicheType) => {
     setUserNiche(niche);
     toast.success(`${niche.charAt(0).toUpperCase() + niche.slice(1)} selected as your industry!`);
     
-    switch (niche) {
-      case "solar":
-        navigate("/solar-dashboard");
-        break;
-      case "hvac":
-        navigate("/hvac-dashboard");
-        break;
-      case "remodeling":
-        navigate("/remodeling-dashboard");
-        break;
+    // Navigate based on the previously selected feature
+    if (selectedFeature === "calculator") {
+      navigate("/calculator");
+    } else if (selectedFeature === "quote") {
+      navigate("/quote");
+    } else {
+      // Default navigation based on niche
+      switch (niche) {
+        case "solar":
+          navigate("/solar-dashboard");
+          break;
+        case "hvac":
+          navigate("/hvac-dashboard");
+          break;
+        case "remodeling":
+          navigate("/remodeling-dashboard");
+          break;
+      }
     }
-  };
-
-  const handleNavigateToFeature = (path: string) => {
-    if (!user.niche) {
-      toast.error("Please select an industry first");
-      return;
-    }
-    navigate(path);
+    
+    setNicheDialogOpen(false);
   };
 
   // This is the generic dashboard for users who haven't selected a niche yet
@@ -73,16 +93,73 @@ const Dashboard = () => {
           transition={{ duration: 0.4 }}
         >
           <header className="mb-8">
-            <h1 className="heading-1 mb-2">Welcome to Your Dashboard</h1>
-            <p className="subheading">
-              Please select an industry to continue
+            <h1 className="text-3xl font-bold tracking-tight mb-2">Welcome to Your Dashboard</h1>
+            <p className="text-muted-foreground">
+              Get started with our powerful ROI calculators and instant quote estimators
             </p>
           </header>
 
-          <div className="max-w-4xl mx-auto">
+          <div className="max-w-5xl mx-auto">
+            {/* Main Feature Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
+              <motion.div 
+                whileHover={{ scale: 1.02 }}
+                transition={{ duration: 0.2 }}
+              >
+                <Card className="h-full cursor-pointer hover:shadow-md border-primary/20 hover:border-primary/50 transition-all"
+                      onClick={() => handleFeatureSelect("calculator")}>
+                  <CardHeader className="pb-2">
+                    <Calculator className="h-8 w-8 text-primary mb-2" />
+                    <CardTitle className="text-xl">ROI Calculator</CardTitle>
+                    <CardDescription>Analyze ROI and gain business insights</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-sm text-muted-foreground">
+                      Calculate comprehensive return on investment metrics for your projects with detailed 
+                      analysis, visualizations, and AI-driven insights.
+                    </p>
+                  </CardContent>
+                  <CardFooter>
+                    <Button variant="secondary" className="w-full">
+                      Calculate ROI
+                    </Button>
+                  </CardFooter>
+                </Card>
+              </motion.div>
+              
+              <motion.div 
+                whileHover={{ scale: 1.02 }}
+                transition={{ duration: 0.2 }}
+              >
+                <Card className="h-full cursor-pointer hover:shadow-md border-primary/20 hover:border-primary/50 transition-all"
+                      onClick={() => handleFeatureSelect("quote")}>
+                  <CardHeader className="pb-2">
+                    <FileText className="h-8 w-8 text-primary mb-2" />
+                    <CardTitle className="text-xl">Instant Quote Estimator</CardTitle>
+                    <CardDescription>Generate quotes in seconds</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-sm text-muted-foreground">
+                      Create professional quotes instantly based on your project parameters. 
+                      Customize, download, and share with clients seamlessly.
+                    </p>
+                  </CardContent>
+                  <CardFooter>
+                    <Button variant="secondary" className="w-full">
+                      Generate Quote
+                    </Button>
+                  </CardFooter>
+                </Card>
+              </motion.div>
+            </div>
+
+            {/* Industry Selection Section */}
             <Card className="mb-8">
               <CardHeader>
                 <CardTitle>Choose Your Industry</CardTitle>
+                <CardDescription>
+                  Select an industry to access specialized calculators and estimators
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -93,9 +170,9 @@ const Dashboard = () => {
                       className="h-48 w-full flex flex-col gap-4 p-6 hover:border-yellow-500/30 hover:bg-yellow-500/5"
                     >
                       <Sun className="h-12 w-12 text-yellow-500" />
-                      <div className="flex flex-col items-center">
+                      <div className="flex flex-col items-center text-center">
                         <h3 className="text-lg font-bold">Solar</h3>
-                        <p className="text-sm text-muted-foreground mt-2 line-clamp-2">
+                        <p className="text-sm text-muted-foreground mt-2 px-4">
                           Solar panel installation and efficiency calculation
                         </p>
                       </div>
@@ -109,9 +186,9 @@ const Dashboard = () => {
                       className="h-48 w-full flex flex-col gap-4 p-6 hover:border-blue-500/30 hover:bg-blue-500/5"
                     >
                       <Wind className="h-12 w-12 text-blue-500" />
-                      <div className="flex flex-col items-center">
+                      <div className="flex flex-col items-center text-center">
                         <h3 className="text-lg font-bold">HVAC</h3>
-                        <p className="text-sm text-muted-foreground mt-2 line-clamp-2">
+                        <p className="text-sm text-muted-foreground mt-2 px-4">
                           Heating, ventilation, and cooling systems
                         </p>
                       </div>
@@ -125,9 +202,9 @@ const Dashboard = () => {
                       className="h-48 w-full flex flex-col gap-4 p-6 hover:border-green-500/30 hover:bg-green-500/5"
                     >
                       <HomeIcon className="h-12 w-12 text-green-500" />
-                      <div className="flex flex-col items-center">
+                      <div className="flex flex-col items-center text-center">
                         <h3 className="text-lg font-bold">Remodeling</h3>
-                        <p className="text-sm text-muted-foreground mt-2 line-clamp-2">
+                        <p className="text-sm text-muted-foreground mt-2 px-4">
                           Home renovation and remodeling projects
                         </p>
                       </div>
@@ -136,48 +213,55 @@ const Dashboard = () => {
                 </div>
               </CardContent>
             </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>App Features</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <Card 
-                    className="bg-primary/5 border-primary/10 cursor-pointer hover:shadow-md transition-all"
-                    onClick={() => handleNavigateToFeature("/calculator")}
-                  >
-                    <CardHeader>
-                      <Calculator className="h-6 w-6 text-primary mb-2" />
-                      <CardTitle className="text-lg">ROI Calculator</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <p className="text-sm text-muted-foreground">
-                        Calculate return on investment for projects with detailed analysis and visualizations.
-                      </p>
-                    </CardContent>
-                  </Card>
-                  
-                  <Card 
-                    className="bg-primary/5 border-primary/10 cursor-pointer hover:shadow-md transition-all"
-                    onClick={() => handleNavigateToFeature("/send")}
-                  >
-                    <CardHeader>
-                      <Mail className="h-6 w-6 text-primary mb-2" />
-                      <CardTitle className="text-lg">Instant Quote Estimator</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <p className="text-sm text-muted-foreground">
-                        Generate professional quotes to send to clients or estimate project costs.
-                      </p>
-                    </CardContent>
-                  </Card>
-                </div>
-              </CardContent>
-            </Card>
           </div>
         </motion.div>
       </div>
+
+      {/* Niche Selection Dialog */}
+      <Dialog open={nicheDialogOpen} onOpenChange={setNicheDialogOpen}>
+        <DialogContent className="sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle>Choose Your Industry</DialogTitle>
+            <DialogDescription>
+              Select an industry to customize your experience with specialized tools and metrics
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 py-4">
+            <Button 
+              onClick={() => handleNicheSelect("solar")}
+              variant="outline" 
+              className="h-32 flex flex-col gap-2 p-4 hover:border-yellow-500/30 hover:bg-yellow-500/5"
+            >
+              <Sun className="h-8 w-8 text-yellow-500" />
+              <div className="text-center">
+                <p className="font-medium">Solar</p>
+              </div>
+            </Button>
+            
+            <Button 
+              onClick={() => handleNicheSelect("hvac")}
+              variant="outline" 
+              className="h-32 flex flex-col gap-2 p-4 hover:border-blue-500/30 hover:bg-blue-500/5"
+            >
+              <Wind className="h-8 w-8 text-blue-500" />
+              <div className="text-center">
+                <p className="font-medium">HVAC</p>
+              </div>
+            </Button>
+            
+            <Button 
+              onClick={() => handleNicheSelect("remodeling")}
+              variant="outline" 
+              className="h-32 flex flex-col gap-2 p-4 hover:border-green-500/30 hover:bg-green-500/5"
+            >
+              <HomeIcon className="h-8 w-8 text-green-500" />
+              <div className="text-center">
+                <p className="font-medium">Remodeling</p>
+              </div>
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
