@@ -1,14 +1,17 @@
+
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { useUser } from "@/context/UserContext";
 import Sidebar from "@/components/Sidebar";
-import { BarChart3, Calculator, Mail, FileText, Sun, Wind, HomeIcon, ArrowLeft } from "lucide-react";
+import { BarChart3, Calculator, Mail, FileText, Sun, Wind, HomeIcon, ArrowLeft, TrendingUp } from "lucide-react";
 import { NicheType } from "@/components/NicheSelection";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import KPITrackerCard from "@/components/KPITrackerCard";
+
 const Dashboard = () => {
   const {
     user,
@@ -39,7 +42,9 @@ const Dashboard = () => {
       }
     }
   }, [isAuthenticated, navigate, user]);
+  
   if (!user) return null;
+  
   const handleFeatureSelect = (feature: "calculator" | "quote") => {
     if (user.niche) {
       // If user already has a niche, navigate directly to the feature
@@ -54,6 +59,7 @@ const Dashboard = () => {
       setNicheDialogOpen(true);
     }
   };
+  
   const handleNicheSelect = (niche: NicheType) => {
     setUserNiche(niche);
     toast.success(`${niche.charAt(0).toUpperCase() + niche.slice(1)} selected as your industry!`);
@@ -81,19 +87,16 @@ const Dashboard = () => {
   };
 
   // This is the generic dashboard for users who haven't selected a niche yet
-  return <div className="min-h-screen bg-background flex">
+  return (
+    <div className="min-h-screen bg-background flex">
       <Sidebar />
       
       <div className="flex-1 ml-16 md:ml-64 p-6">
-        <motion.div initial={{
-        opacity: 0,
-        y: 10
-      }} animate={{
-        opacity: 1,
-        y: 0
-      }} transition={{
-        duration: 0.4
-      }}>
+        <motion.div 
+          initial={{ opacity: 0, y: 10 }} 
+          animate={{ opacity: 1, y: 0 }} 
+          transition={{ duration: 0.4 }}
+        >
           <header className="mb-8">
             <h1 className="text-3xl font-bold tracking-tight mb-2">Welcome to Your Dashboard</h1>
             <p className="text-muted-foreground">
@@ -103,12 +106,11 @@ const Dashboard = () => {
 
           <div className="max-w-5xl mx-auto">
             {/* Main Feature Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
-              <motion.div whileHover={{
-              scale: 1.02
-            }} transition={{
-              duration: 0.2
-            }}>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+              <motion.div 
+                whileHover={{ scale: 1.02 }} 
+                transition={{ duration: 0.2 }}
+              >
                 <Card className="h-full cursor-pointer hover:shadow-md border-primary/20 hover:border-primary/50 transition-all" onClick={() => handleFeatureSelect("calculator")}>
                   <CardHeader className="pb-2">
                     <Calculator className="h-8 w-8 text-primary mb-2" />
@@ -129,11 +131,10 @@ const Dashboard = () => {
                 </Card>
               </motion.div>
               
-              <motion.div whileHover={{
-              scale: 1.02
-            }} transition={{
-              duration: 0.2
-            }}>
+              <motion.div 
+                whileHover={{ scale: 1.02 }} 
+                transition={{ duration: 0.2 }}
+              >
                 <Card className="h-full cursor-pointer hover:shadow-md border-primary/20 hover:border-primary/50 transition-all" onClick={() => handleFeatureSelect("quote")}>
                   <CardHeader className="pb-2">
                     <FileText className="h-8 w-8 text-primary mb-2" />
@@ -153,13 +154,11 @@ const Dashboard = () => {
                   </CardFooter>
                 </Card>
               </motion.div>
+              
+              <KPITrackerCard 
+                className="h-full cursor-pointer hover:shadow-md border-primary/20 hover:border-primary/50 transition-all"
+              />
             </div>
-
-            {/* Industry Selection Section */}
-            <Card className="mb-8">
-              
-              
-            </Card>
           </div>
         </motion.div>
       </div>
@@ -197,6 +196,8 @@ const Dashboard = () => {
           </div>
         </DialogContent>
       </Dialog>
-    </div>;
+    </div>
+  );
 };
+
 export default Dashboard;

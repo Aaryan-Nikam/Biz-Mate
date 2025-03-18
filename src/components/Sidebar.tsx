@@ -130,6 +130,11 @@ const Sidebar: React.FC = () => {
       icon: Mail, 
       label: "Send Quote", 
       path: "/send" 
+    },
+    { 
+      icon: TrendingUp, 
+      label: "KPI Tracker", 
+      path: "/kpi-tracker" 
     }
   ];
 
