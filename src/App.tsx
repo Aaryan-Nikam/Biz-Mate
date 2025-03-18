@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -17,6 +16,7 @@ import NotFound from "./pages/NotFound";
 import SolarDashboard from "./pages/SolarDashboard";
 import HVACDashboard from "./pages/HVACDashboard";
 import RemodelingDashboard from "./pages/RemodelingDashboard";
+import KPITracker from "./pages/KPITracker";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -46,6 +46,7 @@ const App = () => (
             <Route path="/solar-dashboard" element={<SolarDashboard />} />
             <Route path="/hvac-dashboard" element={<HVACDashboard />} />
             <Route path="/remodeling-dashboard" element={<RemodelingDashboard />} />
+            <Route path="/kpi-tracker" element={<KPITracker />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </UserProvider>
