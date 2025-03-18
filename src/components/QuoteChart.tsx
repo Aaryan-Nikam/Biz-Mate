@@ -13,6 +13,11 @@ import {
   Tooltip,
   Legend,
   ResponsiveContainer,
+  RadialBarChart,
+  RadialBar,
+  PieChart,
+  Pie,
+  Cell,
 } from "recharts";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
@@ -47,14 +52,20 @@ const QuoteChart: React.FC<QuoteChartProps> = ({
   const renderTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
       return (
-        <div className="bg-white p-4 rounded-lg shadow-md border border-gray-100">
-          <p className="font-medium text-sm mb-2">{`${label}`}</p>
+        <div className="bg-white p-4 rounded-lg shadow-lg border border-gray-100">
+          <p className="font-medium text-sm mb-2 text-gray-800">{`${label}`}</p>
           {payload.map((entry: any, index: number) => (
             <p
               key={`tooltip-${index}`}
               className="text-sm flex items-center justify-between gap-4"
             >
-              <span style={{ color: entry.color }}>{entry.name}:</span>
+              <span className="flex items-center">
+                <span 
+                  className="h-3 w-3 rounded-full mr-2" 
+                  style={{ backgroundColor: entry.color }}
+                ></span>
+                <span style={{ color: entry.color }}>{entry.name}:</span>
+              </span>
               <span className="font-medium">
                 {typeof entry.value === "number"
                   ? `$${entry.value.toLocaleString()}`
@@ -71,22 +82,61 @@ const QuoteChart: React.FC<QuoteChartProps> = ({
   const renderChart = () => {
     const chartProps = {
       data,
-      margin: { top: 10, right: 30, left: 20, bottom: 10 },
+      margin: { top: 20, right: 30, left: 20, bottom: 10 },
     };
 
     switch (type) {
       case "area":
         return (
           <AreaChart {...chartProps}>
-            {showGridLines && <CartesianGrid strokeDasharray="3 3" />}
-            <XAxis dataKey={xKey} tick={{ fontSize: 12 }} />
+            {showGridLines && (
+              <CartesianGrid 
+                strokeDasharray="3 3" 
+                stroke="#f1f5f9" 
+                strokeWidth={1.5}
+              />
+            )}
+            <defs>
+              {yKeys.map((item, index) => (
+                <linearGradient 
+                  key={`gradient-${item.key}`} 
+                  id={`color-${item.key}`} 
+                  x1="0" 
+                  y1="0" 
+                  x2="0" 
+                  y2="1"
+                >
+                  <stop 
+                    offset="5%" 
+                    stopColor={item.color} 
+                    stopOpacity={0.8}
+                  />
+                  <stop 
+                    offset="95%" 
+                    stopColor={item.color} 
+                    stopOpacity={0.1}
+                  />
+                </linearGradient>
+              ))}
+            </defs>
+            <XAxis 
+              dataKey={xKey} 
+              tick={{ fontSize: 12, fill: "#64748b" }} 
+              tickLine={{ stroke: "#cbd5e1" }}
+              axisLine={{ stroke: "#cbd5e1" }}
+            />
             <YAxis 
               width={60} 
               tickFormatter={formatYAxis}
-              tick={{ fontSize: 12 }}
+              tick={{ fontSize: 12, fill: "#64748b" }}
+              tickLine={{ stroke: "#cbd5e1" }}
+              axisLine={{ stroke: "#cbd5e1" }}
             />
             <Tooltip content={renderTooltip} />
-            <Legend />
+            <Legend 
+              wrapperStyle={{ paddingTop: 15 }}
+              iconType="circle"
+            />
             {yKeys.map((item) => (
               <Area
                 key={item.key}
@@ -94,10 +144,11 @@ const QuoteChart: React.FC<QuoteChartProps> = ({
                 dataKey={item.key}
                 name={item.name}
                 stroke={item.color}
-                fill={item.color}
-                fillOpacity={0.2}
-                activeDot={{ r: 6 }}
+                strokeWidth={3}
+                fill={`url(#color-${item.key})`}
+                activeDot={{ r: 8, strokeWidth: 0, fill: item.color }}
                 animationDuration={1500}
+                animationEasing="ease-in-out"
               />
             ))}
           </AreaChart>
@@ -105,16 +156,32 @@ const QuoteChart: React.FC<QuoteChartProps> = ({
       case "bar":
         return (
           <BarChart {...chartProps}>
-            {showGridLines && <CartesianGrid strokeDasharray="3 3" />}
-            <XAxis dataKey={xKey} tick={{ fontSize: 12 }} />
+            {showGridLines && (
+              <CartesianGrid 
+                strokeDasharray="3 3" 
+                stroke="#f1f5f9" 
+                strokeWidth={1.5}
+              />
+            )}
+            <XAxis 
+              dataKey={xKey} 
+              tick={{ fontSize: 12, fill: "#64748b" }}
+              tickLine={{ stroke: "#cbd5e1" }}
+              axisLine={{ stroke: "#cbd5e1" }}
+            />
             <YAxis 
               width={60} 
               tickFormatter={formatYAxis}
-              tick={{ fontSize: 12 }}
+              tick={{ fontSize: 12, fill: "#64748b" }}
+              tickLine={{ stroke: "#cbd5e1" }}
+              axisLine={{ stroke: "#cbd5e1" }}
             />
             <Tooltip content={renderTooltip} />
-            <Legend />
-            {yKeys.map((item) => (
+            <Legend 
+              wrapperStyle={{ paddingTop: 15 }}
+              iconType="circle"
+            />
+            {yKeys.map((item, index) => (
               <Bar
                 key={item.key}
                 dataKey={item.key}
@@ -122,22 +189,49 @@ const QuoteChart: React.FC<QuoteChartProps> = ({
                 fill={item.color}
                 radius={[4, 4, 0, 0]}
                 animationDuration={1500}
-              />
+                animationEasing="ease-in-out"
+              >
+                {data.map((entry, index) => (
+                  <Cell
+                    key={`cell-${index}`}
+                    fill={item.color}
+                    fillOpacity={0.9}
+                    stroke={item.color}
+                    strokeWidth={1}
+                  />
+                ))}
+              </Bar>
             ))}
           </BarChart>
         );
       case "line":
         return (
           <LineChart {...chartProps}>
-            {showGridLines && <CartesianGrid strokeDasharray="3 3" />}
-            <XAxis dataKey={xKey} tick={{ fontSize: 12 }} />
+            {showGridLines && (
+              <CartesianGrid 
+                strokeDasharray="3 3" 
+                stroke="#f1f5f9" 
+                strokeWidth={1.5}
+              />
+            )}
+            <XAxis 
+              dataKey={xKey} 
+              tick={{ fontSize: 12, fill: "#64748b" }}
+              tickLine={{ stroke: "#cbd5e1" }}
+              axisLine={{ stroke: "#cbd5e1" }}
+            />
             <YAxis 
               width={60} 
               tickFormatter={formatYAxis}
-              tick={{ fontSize: 12 }}
+              tick={{ fontSize: 12, fill: "#64748b" }}
+              tickLine={{ stroke: "#cbd5e1" }}
+              axisLine={{ stroke: "#cbd5e1" }}
             />
             <Tooltip content={renderTooltip} />
-            <Legend />
+            <Legend 
+              wrapperStyle={{ paddingTop: 15 }}
+              iconType="circle"
+            />
             {yKeys.map((item) => (
               <Line
                 key={item.key}
@@ -145,10 +239,11 @@ const QuoteChart: React.FC<QuoteChartProps> = ({
                 dataKey={item.key}
                 name={item.name}
                 stroke={item.color}
-                strokeWidth={2}
-                dot={{ r: 4 }}
-                activeDot={{ r: 6 }}
+                strokeWidth={3}
+                dot={{ r: 6, fill: item.color, strokeWidth: 3, stroke: "white" }}
+                activeDot={{ r: 8, strokeWidth: 0, fill: item.color }}
                 animationDuration={1500}
+                animationEasing="ease-in-out"
               />
             ))}
           </LineChart>
@@ -159,12 +254,12 @@ const QuoteChart: React.FC<QuoteChartProps> = ({
   };
 
   return (
-    <Card className={cn("overflow-hidden h-full", className)}>
-      <CardHeader className="pb-2">
-        <CardTitle className="text-lg">{title}</CardTitle>
+    <Card className={cn("overflow-hidden h-full bg-white", className)}>
+      <CardHeader className="pb-2 border-b">
+        <CardTitle className="text-lg font-semibold text-slate-800">{title}</CardTitle>
       </CardHeader>
-      <CardContent>
-        <div className="h-full w-full">
+      <CardContent className="p-0">
+        <div className="h-full w-full p-4">
           <ResponsiveContainer width="100%" height={height}>
             {renderChart()}
           </ResponsiveContainer>

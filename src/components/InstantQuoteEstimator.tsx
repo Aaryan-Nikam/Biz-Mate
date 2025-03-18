@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -27,7 +26,7 @@ interface QuoteEstimateResult {
 
 export interface InstantQuoteEstimatorProps {
   niche?: NicheType;
-  onComplete?: () => void;
+  onComplete?: (data: any) => void; // Fixed the interface to accept data parameter
 }
 
 const InstantQuoteEstimator: React.FC<InstantQuoteEstimatorProps> = ({ niche, onComplete }) => {
@@ -98,49 +97,72 @@ const InstantQuoteEstimator: React.FC<InstantQuoteEstimatorProps> = ({ niche, on
     
     // Simulate API call or calculation
     setTimeout(() => {
-      // Calculate different results based on niche
-      let result: QuoteEstimateResult;
-      
-      switch (niche) {
-        case "solar":
-          result = calculateSolarQuote(formState);
-          break;
-        case "hvac":
-          result = calculateHVACQuote(formState);
-          break;
-        case "remodeling":
-          result = calculateRemodelingQuote(formState);
-          break;
-        default:
-          result = {
-            totalCost: 10000,
-            monthlyPayment: 200,
-            paybackPeriod: 5,
-            roi: 15,
-            savings: 2000,
-            insights: [
-              "This is a default quote estimation.",
-              "Select a specific niche for more accurate results.",
-              "The numbers shown are just for demonstration purposes."
-            ],
-            chartData: Array.from({ length: 10 }, (_, i) => ({
-              year: i + 1,
-              savings: 2000 * (i + 1),
-              investment: i === 0 ? 10000 : 0
-            }))
+      try {
+        // Calculate different results based on niche
+        let result: QuoteEstimateResult;
+        
+        switch (niche) {
+          case "solar":
+            result = calculateSolarQuote(formState);
+            break;
+          case "hvac":
+            result = calculateHVACQuote(formState);
+            break;
+          case "remodeling":
+            result = calculateRemodelingQuote(formState);
+            break;
+          default:
+            result = {
+              totalCost: 10000,
+              monthlyPayment: 200,
+              paybackPeriod: 5,
+              roi: 15,
+              savings: 2000,
+              insights: [
+                "This is a default quote estimation.",
+                "Select a specific niche for more accurate results.",
+                "The numbers shown are just for demonstration purposes."
+              ],
+              chartData: Array.from({ length: 10 }, (_, i) => ({
+                year: i + 1,
+                savings: 2000 * (i + 1),
+                investment: i === 0 ? 10000 : 0
+              }))
+            };
+        }
+        
+        setQuoteResult(result);
+        setActiveTab("result");
+        
+        // Call onComplete callback with the result data
+        if (onComplete) {
+          // Generate a more complete data object to pass back
+          const quoteData = {
+            customerInfo,
+            totalAmount: result.totalCost,
+            monthlyPayment: result.monthlyPayment,
+            roi: result.roi,
+            savings: result.savings,
+            profitMargin: Math.round((result.roi / 2) * 10) / 10, // Simplified calculation for demo
+            paybackPeriod: result.paybackPeriod,
+            laborCost: Math.round(result.totalCost * 0.4),
+            materialsCost: Math.round(result.totalCost * 0.4),
+            overheadCost: Math.round(result.totalCost * 0.2),
+            monthlyRevenue: Math.round(result.savings / 12),
+            monthlyCost: Math.round((result.totalCost / result.paybackPeriod) / 12),
+            insights: result.insights
           };
+          
+          onComplete(quoteData);
+        }
+        
+        toast.success("Quote estimate generated successfully!");
+      } catch (error) {
+        toast.error("Error calculating quote");
+        console.error(error);
+      } finally {
+        setIsGenerating(false);
       }
-      
-      setQuoteResult(result);
-      setIsGenerating(false);
-      setActiveTab("result"); // Auto-switch to result tab
-      
-      // Call onComplete callback if provided
-      if (onComplete) {
-        onComplete();
-      }
-      
-      toast.success("Quote estimate generated successfully!");
     }, 1500);
   };
 
@@ -720,143 +742,4 @@ const InstantQuoteEstimator: React.FC<InstantQuoteEstimatorProps> = ({ niche, on
                     )}
                   </div>
                   
-                  <div className="bg-primary/10 rounded-lg p-4 flex flex-col items-center justify-center">
-                    <p className="text-sm text-muted-foreground">
-                      {niche === "remodeling" ? "Return on Investment" : "Payback Period"}
-                    </p>
-                    <p className="text-3xl font-bold">
-                      {niche === "remodeling" 
-                        ? `${quoteResult.roi}%` 
-                        : quoteResult.paybackPeriod === Infinity 
-                          ? "N/A" 
-                          : `${quoteResult.paybackPeriod} years`}
-                    </p>
-                    {niche !== "remodeling" && quoteResult.paybackPeriod !== Infinity && (
-                      <p className="text-xs text-muted-foreground">ROI: {quoteResult.roi}%</p>
-                    )}
-                  </div>
-                </div>
-                
-                <div className="bg-card border rounded-lg p-6 mt-4">
-                  <h3 className="text-lg font-semibold mb-4 flex items-center">
-                    <Lightbulb className="h-5 w-5 mr-2 text-primary" />
-                    AI Insights
-                  </h3>
-                  <ul className="space-y-2">
-                    {quoteResult.insights.map((insight, index) => (
-                      <li key={index} className="flex items-start gap-2">
-                        <Badge variant="outline" className="mt-0.5 shrink-0">
-                          {index + 1}
-                        </Badge>
-                        <p>{insight}</p>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-                
-                <div className="mt-6">
-                  <h3 className="text-lg font-semibold mb-4">Visualized Projection</h3>
-                  <div className="h-[300px]">
-                    {niche === "remodeling" ? (
-                      <QuoteChart
-                        type="bar"
-                        title="Cost & Value Breakdown"
-                        data={quoteResult.chartData}
-                        xKey="category"
-                        yKeys={[
-                          { key: "value", name: "Amount ($)", color: "#10b981" }
-                        ]}
-                      />
-                    ) : (
-                      <QuoteChart
-                        type="area"
-                        title={niche === "solar" ? "Solar Savings Over Time" : "HVAC Savings Over Time"}
-                        data={quoteResult.chartData}
-                        xKey="year"
-                        yKeys={[
-                          { key: "savings", name: "Cumulative Savings", color: "#2563eb" },
-                          { key: "investment", name: "Investment", color: "#ef4444" }
-                        ]}
-                      />
-                    )}
-                  </div>
-                </div>
-                
-                <div className="p-4 bg-muted rounded-lg">
-                  <h3 className="text-md font-medium mb-4">Send or Download Your Quote</h3>
-                  <div className="space-y-4">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <Label htmlFor="name">Your Name</Label>
-                        <Input
-                          id="name"
-                          name="name"
-                          value={customerInfo.name}
-                          onChange={handleCustomerInfoChange}
-                          placeholder="John Doe"
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="email">Email Address</Label>
-                        <Input
-                          id="email"
-                          name="email"
-                          type="email"
-                          value={customerInfo.email}
-                          onChange={handleCustomerInfoChange}
-                          placeholder="john@example.com"
-                        />
-                      </div>
-                    </div>
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <Label htmlFor="phone">Phone Number (Optional)</Label>
-                        <Input
-                          id="phone"
-                          name="phone"
-                          value={customerInfo.phone}
-                          onChange={handleCustomerInfoChange}
-                          placeholder="(123) 456-7890"
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="address">Address (Optional)</Label>
-                        <Input
-                          id="address"
-                          name="address"
-                          value={customerInfo.address}
-                          onChange={handleCustomerInfoChange}
-                          placeholder="123 Main St"
-                        />
-                      </div>
-                    </div>
-                    
-                    <div className="flex flex-col sm:flex-row gap-4 pt-2">
-                      <Button 
-                        onClick={handleSendEmail}
-                        className="flex-1"
-                        disabled={!customerInfo.email}
-                      >
-                        <Send className="mr-2 h-4 w-4" /> Send via Email
-                      </Button>
-                      <Button 
-                        onClick={handleDownload}
-                        variant="outline"
-                        className="flex-1"
-                      >
-                        <Download className="mr-2 h-4 w-4" /> Download Quote
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              </>
-            )}
-          </TabsContent>
-        </Tabs>
-      </CardContent>
-    </Card>
-  );
-};
-
-export default InstantQuoteEstimator;
+                  <div className="bg-primary/10
