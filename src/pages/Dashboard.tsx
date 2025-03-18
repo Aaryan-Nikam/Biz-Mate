@@ -100,13 +100,15 @@ const Dashboard = () => {
           <header className="mb-8">
             <h1 className="text-3xl font-bold tracking-tight mb-2">Welcome to Your Dashboard</h1>
             <p className="text-muted-foreground">
-              Get started with our powerful ROI calculators and instant quote estimators
+              {user.role === "homeowner" 
+                ? "Calculate your savings and get quotes from trusted providers" 
+                : "Get started with our powerful ROI calculators and instant quote estimators"}
             </p>
           </header>
 
           <div className="max-w-5xl mx-auto">
             {/* Main Feature Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+            <div className="grid grid-cols-1 md:grid-cols-{user.role === 'provider' ? '3' : '2'} gap-6 mb-10">
               <motion.div 
                 whileHover={{ scale: 1.02 }} 
                 transition={{ duration: 0.2 }}
@@ -115,12 +117,17 @@ const Dashboard = () => {
                   <CardHeader className="pb-2">
                     <Calculator className="h-8 w-8 text-primary mb-2" />
                     <CardTitle className="text-xl">ROI Calculator</CardTitle>
-                    <CardDescription>Analyze ROI and gain business insights</CardDescription>
+                    <CardDescription>
+                      {user.role === "homeowner" 
+                        ? "Calculate potential savings and return on your investment" 
+                        : "Analyze ROI and gain business insights"}
+                    </CardDescription>
                   </CardHeader>
                   <CardContent>
                     <p className="text-sm text-muted-foreground">
-                      Calculate comprehensive return on investment metrics for your projects with detailed 
-                      analysis, visualizations, and AI-driven insights.
+                      {user.role === "homeowner"
+                        ? "Calculate comprehensive return on investment metrics for your home improvement projects with detailed analysis and visualizations."
+                        : "Calculate comprehensive return on investment metrics for your projects with detailed analysis, visualizations, and AI-driven insights."}
                     </p>
                   </CardContent>
                   <CardFooter>
@@ -138,26 +145,33 @@ const Dashboard = () => {
                 <Card className="h-full cursor-pointer hover:shadow-md border-primary/20 hover:border-primary/50 transition-all" onClick={() => handleFeatureSelect("quote")}>
                   <CardHeader className="pb-2">
                     <FileText className="h-8 w-8 text-primary mb-2" />
-                    <CardTitle className="text-xl">Instant Quote Estimator</CardTitle>
-                    <CardDescription>Generate quotes in seconds</CardDescription>
+                    <CardTitle className="text-xl">
+                      {user.role === "homeowner" ? "Quote Requests" : "Instant Quote Estimator"}
+                    </CardTitle>
+                    <CardDescription>
+                      {user.role === "homeowner" ? "Get quotes from professionals" : "Generate quotes in seconds"}
+                    </CardDescription>
                   </CardHeader>
                   <CardContent>
                     <p className="text-sm text-muted-foreground">
-                      Create professional quotes instantly based on your project parameters. 
-                      Customize, download, and share with clients seamlessly.
+                      {user.role === "homeowner"
+                        ? "Request detailed quotes from trusted professionals for your home improvement projects quickly and easily."
+                        : "Create professional quotes instantly based on your project parameters. Customize, download, and share with clients seamlessly."}
                     </p>
                   </CardContent>
                   <CardFooter>
                     <Button variant="secondary" className="w-full">
-                      Generate Quote
+                      {user.role === "homeowner" ? "Request Quote" : "Generate Quote"}
                     </Button>
                   </CardFooter>
                 </Card>
               </motion.div>
               
-              <KPITrackerCard 
-                className="h-full cursor-pointer hover:shadow-md border-primary/20 hover:border-primary/50 transition-all"
-              />
+              {user.role === "provider" && (
+                <KPITrackerCard 
+                  className="h-full cursor-pointer hover:shadow-md border-primary/20 hover:border-primary/50 transition-all"
+                />
+              )}
             </div>
           </div>
         </motion.div>

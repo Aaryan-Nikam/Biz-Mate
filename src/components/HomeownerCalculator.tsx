@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -166,7 +165,7 @@ const HomeownerCalculator: React.FC<HomeownerCalculatorProps> = ({ onSaveQuote }
             <CardHeader>
               <CardTitle>Homeowner ROI Calculator</CardTitle>
               <CardDescription>
-                Calculate the return on investment for your home improvement projects
+                Calculate the potential savings and return on investment for your home improvement projects
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -270,7 +269,7 @@ const HomeownerCalculator: React.FC<HomeownerCalculatorProps> = ({ onSaveQuote }
                 className="w-full"
                 disabled={isCalculating}
               >
-                {isCalculating ? "Calculating..." : "Calculate ROI"}
+                {isCalculating ? "Calculating..." : "Calculate Savings"}
               </Button>
             </CardFooter>
           </Card>
@@ -285,9 +284,9 @@ const HomeownerCalculator: React.FC<HomeownerCalculatorProps> = ({ onSaveQuote }
             >
               <Card>
                 <CardHeader>
-                  <CardTitle>ROI Analysis Results</CardTitle>
+                  <CardTitle>Savings Analysis Results</CardTitle>
                   <CardDescription>
-                    Based on your inputs, here's your expected return on investment
+                    Based on your inputs, here's your expected savings and return on investment
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
@@ -340,7 +339,7 @@ const HomeownerCalculator: React.FC<HomeownerCalculatorProps> = ({ onSaveQuote }
                 </CardContent>
                 <CardFooter className="flex flex-col sm:flex-row gap-4">
                   <Button onClick={handleSaveQuote} className="w-full sm:w-auto">
-                    Save Quote
+                    Save Results
                   </Button>
                   <Button variant="outline" onClick={() => setActiveTab("inputs")} className="w-full sm:w-auto">
                     Modify Inputs

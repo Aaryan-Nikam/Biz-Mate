@@ -15,8 +15,9 @@ const Quote = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [activeStep, setActiveStep] = useState(1);
-  const [formData, setFormData] = useState(null);
+  const [formData, setFormData] = useState<any>(null);
 
+  // Fix the type mismatch by ensuring onComplete accepts a data parameter
   const handleQuoteComplete = (data: any) => {
     setFormData(data);
     setActiveStep(2);

@@ -1,5 +1,4 @@
-
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "@/context/UserContext";
 import Sidebar from "@/components/Sidebar";
@@ -15,7 +14,6 @@ import { Download, TrendingUp, Lightbulb, AreaChart, BarChart, PieChart, LineCha
 import { toast } from "sonner";
 import QuoteChart from "@/components/QuoteChart";
 
-// Define metric categories
 const metricCategories = {
   revenue: [
     { id: "totalRevenue", label: "Total Revenue", default: 0 },
@@ -66,7 +64,6 @@ const metricCategories = {
   ],
 };
 
-// Function to get niche-specific metrics
 const getNicheMetrics = (niche) => {
   switch (niche) {
     case "solar":
@@ -80,22 +77,15 @@ const getNicheMetrics = (niche) => {
   }
 };
 
-// Initial form state generator
 const getInitialFormState = (includeNicheMetrics = true, niche = null) => {
   const state = {
-    // Revenue metrics
     ...Object.fromEntries(metricCategories.revenue.map(m => [m.id, m.default])),
-    // Cost metrics
     ...Object.fromEntries(metricCategories.costs.map(m => [m.id, m.default])),
-    // Marketing metrics
     ...Object.fromEntries(metricCategories.marketing.map(m => [m.id, m.default])),
-    // Client metrics
     ...Object.fromEntries(metricCategories.clients.map(m => [m.id, m.default])),
-    // Operational metrics
     ...Object.fromEntries(metricCategories.operations.map(m => [m.id, m.default])),
   };
 
-  // Add niche-specific metrics if needed
   if (includeNicheMetrics && niche) {
     const nicheMetrics = getNicheMetrics(niche);
     return {
@@ -116,14 +106,19 @@ const KPITracker = () => {
   const [monthlyFormState, setMonthlyFormState] = useState(() => getInitialFormState(true, user?.niche));
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // If not logged in, redirect to login
-  React.useEffect(() => {
+  useEffect(() => {
     if (!user) {
       navigate("/login");
+      return;
+    }
+    
+    if (user.role !== "provider") {
+      toast.error("KPI Tracker is only available for service providers");
+      navigate("/dashboard");
     }
   }, [user, navigate]);
 
-  if (!user) return null;
+  if (!user || user.role !== "provider") return null;
 
   const handleInputChange = (e, formType) => {
     const { name, value } = e.target;
@@ -145,29 +140,23 @@ const KPITracker = () => {
   };
 
   const calculateProfitMetrics = (formState) => {
-    // Revenue calculation
     const totalRevenue = formState.totalRevenue || 
                         (formState.recurringRevenue + formState.onetimeRevenue + formState.upsellRevenue);
     
-    // Cost calculation
     const totalCosts = formState.fixedOverheads + 
                       formState.variableCosts + 
                       formState.laborCosts + 
                       formState.marketingSpend + 
                       formState.technologyTools;
     
-    // Profit calculation
     const grossProfit = totalRevenue - (formState.variableCosts + formState.laborCosts);
     const netProfit = totalRevenue - totalCosts;
     
-    // Margins
     const grossProfitMargin = totalRevenue > 0 ? (grossProfit / totalRevenue) * 100 : 0;
     const netProfitMargin = totalRevenue > 0 ? (netProfit / totalRevenue) * 100 : 0;
     
-    // ROI
     const roi = totalCosts > 0 ? (netProfit / totalCosts) * 100 : 0;
     
-    // Break-even
     const breakEven = formState.fixedOverheads / 
                       (totalRevenue > 0 && (formState.variableCosts + formState.laborCosts) < totalRevenue ? 
                       1 - ((formState.variableCosts + formState.laborCosts) / totalRevenue) : 1);
@@ -199,14 +188,11 @@ const KPITracker = () => {
     toast.success("Downloading KPI report...");
   };
 
-  // Calculate metrics for dashboard
   const dailyMetrics = calculateProfitMetrics(dailyFormState);
   const monthlyMetrics = calculateProfitMetrics(monthlyFormState);
   
-  // Use the appropriate metrics based on the active tab
   const metrics = activeTab === "daily" ? dailyMetrics : monthlyMetrics;
 
-  // Sample data for charts
   const revenueData = [
     { month: "Jan", revenue: 12000 },
     { month: "Feb", revenue: 15000 },

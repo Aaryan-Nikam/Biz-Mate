@@ -26,12 +26,12 @@ const KPITrackerCard: React.FC<KPITrackerCardProps> = ({ className }) => {
       <CardContent className="pb-3">
         <div className="grid grid-cols-2 gap-4 mb-4">
           <div className="bg-primary/10 rounded-lg p-3 flex flex-col items-center justify-center">
-            <p className="text-xs text-muted-foreground">Revenue</p>
-            <p className="text-lg font-bold">$12,500</p>
+            <p className="text-xs text-muted-foreground">Analytics</p>
+            <p className="text-sm font-medium">Track Performance</p>
           </div>
           <div className="bg-primary/10 rounded-lg p-3 flex flex-col items-center justify-center">
-            <p className="text-xs text-muted-foreground">Profit</p>
-            <p className="text-lg font-bold">$3,200</p>
+            <p className="text-xs text-muted-foreground">Insights</p>
+            <p className="text-sm font-medium">Optimize Business</p>
           </div>
         </div>
         <p className="text-sm text-muted-foreground">

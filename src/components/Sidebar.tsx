@@ -115,7 +115,8 @@ const Sidebar: React.FC = () => {
     }
   ];
 
-  const featureNavItems = [
+  // Create base feature items
+  let featureNavItems = [
     { 
       icon: Calculator, 
       label: "ROI Calculator", 
@@ -123,20 +124,24 @@ const Sidebar: React.FC = () => {
     },
     { 
       icon: FileText, 
-      label: "Quote Estimator", 
+      label: user?.role === "homeowner" ? "Quote Requests" : "Quote Estimator", 
       path: "/quote" 
     },
     { 
       icon: Mail, 
       label: "Send Quote", 
       path: "/send" 
-    },
-    { 
+    }
+  ];
+  
+  // Add KPI Tracker only for providers
+  if (user?.role === "provider") {
+    featureNavItems.push({ 
       icon: TrendingUp, 
       label: "KPI Tracker", 
       path: "/kpi-tracker" 
-    }
-  ];
+    });
+  }
 
   const accountNavItems = [
     { 
