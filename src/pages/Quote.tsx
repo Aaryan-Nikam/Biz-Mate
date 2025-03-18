@@ -9,6 +9,8 @@ import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import InstantQuoteEstimator from "@/components/InstantQuoteEstimator";
 import QuoteChart from "@/components/QuoteChart";
+import { Lightbulb } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 
 const Quote = () => {
   const { user } = useUser();
@@ -90,8 +92,8 @@ const Quote = () => {
                       </div>
                       
                       <div className="space-y-8">
-                        <Card className="overflow-hidden border-0 shadow-md">
-                          <div className="h-[350px]">
+                        <div>
+                          <div className="h-[350px] overflow-hidden rounded-t-lg border border-slate-200">
                             <QuoteChart
                               type="bar"
                               title="Cost Breakdown"
@@ -101,17 +103,20 @@ const Quote = () => {
                                 { name: "Overhead", value: formData.overheadCost || 0 }
                               ]}
                               xKey="name"
-                              yKeys={[{ key: "value", name: "Amount", color: "#8B5CF6" }]} // Vibrant purple
+                              yKeys={[{ key: "value", name: "Amount", color: "#8B5CF6" }]}
                             />
                           </div>
-                          <div className="p-4 bg-gradient-to-r from-purple-50 to-indigo-50">
-                            <h4 className="font-medium text-purple-700 mb-2">Cost Insight</h4>
+                          <div className="p-4 bg-gradient-to-r from-purple-50 to-indigo-50 rounded-b-lg border-x border-b border-slate-200">
+                            <h4 className="font-medium text-purple-700 mb-2 flex items-center">
+                              <Lightbulb className="mr-2 h-5 w-5 text-purple-500" />
+                              Cost Insight
+                            </h4>
                             <p className="text-sm text-slate-700">Labor and materials make up the majority of your project costs. Optimizing your material selection could reduce overall expenses by 10-15%.</p>
                           </div>
-                        </Card>
+                        </div>
                         
-                        <Card className="overflow-hidden border-0 shadow-md">
-                          <div className="h-[350px]">
+                        <div>
+                          <div className="h-[350px] overflow-hidden rounded-t-lg border border-slate-200">
                             <QuoteChart
                               type="bar"
                               title="ROI Analysis"
@@ -122,19 +127,22 @@ const Quote = () => {
                               ]}
                               xKey="month"
                               yKeys={[
-                                { key: "revenue", name: "Revenue", color: "#0EA5E9" }, // Ocean blue
-                                { key: "cost", name: "Cost", color: "#F97316" } // Bright orange
+                                { key: "revenue", name: "Revenue", color: "#0EA5E9" },
+                                { key: "cost", name: "Cost", color: "#F97316" }
                               ]}
                             />
                           </div>
-                          <div className="p-4 bg-gradient-to-r from-blue-50 to-sky-50">
-                            <h4 className="font-medium text-blue-700 mb-2">ROI Insight</h4>
+                          <div className="p-4 bg-gradient-to-r from-blue-50 to-sky-50 rounded-b-lg border-x border-b border-slate-200">
+                            <h4 className="font-medium text-blue-700 mb-2 flex items-center">
+                              <Lightbulb className="mr-2 h-5 w-5 text-blue-500" />
+                              ROI Insight
+                            </h4>
                             <p className="text-sm text-slate-700">Your project shows increasing returns month-over-month. Based on current projections, you'll begin seeing positive cash flow within the first quarter.</p>
                           </div>
-                        </Card>
+                        </div>
                         
-                        <Card className="overflow-hidden border-0 shadow-md">
-                          <div className="h-[350px]">
+                        <div>
+                          <div className="h-[350px] overflow-hidden rounded-t-lg border border-slate-200">
                             <QuoteChart
                               type="area"
                               title="Long-term Value Projection"
@@ -147,16 +155,19 @@ const Quote = () => {
                               ]}
                               xKey="year"
                               yKeys={[
-                                { key: "value", name: "Investment Value", color: "#D946EF" }, // Magenta pink
-                                { key: "savings", name: "Cumulative Savings", color: "#10B981" } // Green
+                                { key: "value", name: "Investment Value", color: "#D946EF" },
+                                { key: "savings", name: "Cumulative Savings", color: "#10B981" }
                               ]}
                             />
                           </div>
-                          <div className="p-4 bg-gradient-to-r from-emerald-50 to-teal-50">
-                            <h4 className="font-medium text-emerald-700 mb-2">Long-term Insight</h4>
+                          <div className="p-4 bg-gradient-to-r from-emerald-50 to-teal-50 rounded-b-lg border-x border-b border-slate-200">
+                            <h4 className="font-medium text-emerald-700 mb-2 flex items-center">
+                              <Lightbulb className="mr-2 h-5 w-5 text-emerald-500" />
+                              Long-term Insight
+                            </h4>
                             <p className="text-sm text-slate-700">Your investment will continue to generate value over its lifetime. By year 5, you can expect to have saved more than 6x your initial investment.</p>
                           </div>
-                        </Card>
+                        </div>
                       </div>
                       
                       <div className="p-5 bg-gradient-to-r from-amber-50 to-yellow-50 rounded-lg shadow-sm">
@@ -200,7 +211,10 @@ const Quote = () => {
               </Card>
             </TabsContent>
             <TabsContent value="history">
-              
+              <Card className="p-6">
+                <h3 className="text-lg font-medium mb-4">Quote History</h3>
+                <p className="text-muted-foreground">Your sent quotes will appear here.</p>
+              </Card>
             </TabsContent>
           </Tabs>
         </motion.div>
