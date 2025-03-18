@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useUser } from "@/context/UserContext";
@@ -92,7 +93,8 @@ const Quote = () => {
                           <h4 className="font-medium mb-4">Cost Breakdown</h4>
                           <div className="h-[250px]">
                             <QuoteChart
-                              type="pie"
+                              type="bar"
+                              title="Cost Breakdown"
                               data={[
                                 { name: "Labor", value: formData.laborCost || 0 },
                                 { name: "Materials", value: formData.materialsCost || 0 },
@@ -109,6 +111,7 @@ const Quote = () => {
                           <div className="h-[250px]">
                             <QuoteChart
                               type="bar"
+                              title="ROI Analysis"
                               data={[
                                 { month: "Month 1", revenue: formData.monthlyRevenue || 0, cost: formData.monthlyCost || 0 },
                                 { month: "Month 2", revenue: (formData.monthlyRevenue || 0) * 1.1, cost: (formData.monthlyCost || 0) * 1.05 },

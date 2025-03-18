@@ -1,9 +1,12 @@
+
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { NicheType } from '@/components/NicheSelection';
 
 interface User {
   id: string;
   name: string;
+  firstName?: string;
+  lastName?: string;
   email: string;
   role: 'homeowner' | 'provider';
   niche?: NicheType;
@@ -44,9 +47,12 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const login = (email: string, password: string) => {
     // In a real app, this would call an API
+    const names = 'Demo User'.split(' ');
     setUser({
       id: '1',
       name: 'Demo User',
+      firstName: names[0],
+      lastName: names.length > 1 ? names.slice(1).join(' ') : '',
       email,
       role: user?.role || 'homeowner',
       niche: user?.niche
@@ -60,9 +66,12 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signup = (name: string, email: string, password: string) => {
     // In a real app, this would call an API
+    const names = name.split(' ');
     setUser({
       id: '1',
       name,
+      firstName: names[0],
+      lastName: names.length > 1 ? names.slice(1).join(' ') : '',
       email,
       role: user?.role || 'homeowner',
       niche: user?.niche
@@ -71,11 +80,36 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const setUserRole = (role: 'homeowner' | 'provider') => {
-    setUser(prev => prev ? { ...prev, role } : { id: '1', name: 'Guest', email: '', role });
+    setUser(prev => {
+      if (!prev) {
+        return { 
+          id: '1', 
+          name: 'Guest', 
+          firstName: 'Guest', 
+          lastName: '', 
+          email: '', 
+          role 
+        };
+      }
+      return { ...prev, role };
+    });
   };
 
   const setUserNiche = (niche: NicheType) => {
-    setUser(prev => prev ? { ...prev, niche } : { id: '1', name: 'Guest', email: '', role: 'homeowner', niche });
+    setUser(prev => {
+      if (!prev) {
+        return { 
+          id: '1', 
+          name: 'Guest', 
+          firstName: 'Guest', 
+          lastName: '', 
+          email: '', 
+          role: 'homeowner', 
+          niche 
+        };
+      }
+      return { ...prev, niche };
+    });
   };
   
   const clearUserNiche = () => {

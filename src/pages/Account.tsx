@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "@/context/UserContext";
 import Sidebar from "@/components/Sidebar";
@@ -34,8 +34,21 @@ const Account = () => {
     niche: user?.niche || "solar" as NicheType
   });
 
+  // Update form data when user changes
+  useEffect(() => {
+    if (user) {
+      setFormData(prev => ({
+        ...prev,
+        firstName: user.firstName || "",
+        lastName: user.lastName || "",
+        email: user.email || "",
+        niche: user.niche || "solar" as NicheType
+      }));
+    }
+  }, [user]);
+
   // Redirect to login if not logged in
-  React.useEffect(() => {
+  useEffect(() => {
     if (!user) {
       navigate("/login");
     }
@@ -98,7 +111,7 @@ const Account = () => {
                       </div>
                       
                       <h3 className="text-xl font-medium">
-                        {user.firstName} {user.lastName}
+                        {user.firstName || ''} {user.lastName || ''}
                       </h3>
                       <p className="text-sm text-muted-foreground mb-2">{user.email}</p>
                       
