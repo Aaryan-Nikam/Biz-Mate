@@ -108,7 +108,7 @@ const Dashboard = () => {
 
           <div className="max-w-5xl mx-auto">
             {/* Main Feature Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-{user.role === 'provider' ? '3' : '2'} gap-6 mb-10">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
               <motion.div 
                 whileHover={{ scale: 1.02 }} 
                 transition={{ duration: 0.2 }}
@@ -168,9 +168,12 @@ const Dashboard = () => {
               </motion.div>
               
               {user.role === "provider" && (
-                <KPITrackerCard 
-                  className="h-full cursor-pointer hover:shadow-md border-primary/20 hover:border-primary/50 transition-all"
-                />
+                <motion.div
+                  whileHover={{ scale: 1.02 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <KPITrackerCard />
+                </motion.div>
               )}
             </div>
           </div>

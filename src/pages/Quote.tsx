@@ -58,15 +58,21 @@ const Quote = () => {
           transition={{ duration: 0.4 }}
         >
           <header className="mb-8">
-            <h1 className="text-3xl font-bold tracking-tight mb-2">Quote Estimator</h1>
+            <h1 className="text-3xl font-bold tracking-tight mb-2">
+              {user?.role === "homeowner" ? "Quote Requests" : "Quote Estimator"}
+            </h1>
             <p className="text-muted-foreground">
-              Generate accurate quotes for your projects in seconds
+              {user?.role === "homeowner" 
+                ? "Request detailed quotes from trusted professionals" 
+                : "Generate accurate quotes for your projects in seconds"}
             </p>
           </header>
 
           <Tabs defaultValue="quote" className="mb-8">
             <TabsList>
-              <TabsTrigger value="quote">Create Quote</TabsTrigger>
+              <TabsTrigger value="quote">
+                {user?.role === "homeowner" ? "Request Quote" : "Create Quote"}
+              </TabsTrigger>
               <TabsTrigger value="history">Quote History</TabsTrigger>
             </TabsList>
             <TabsContent value="quote">
@@ -110,7 +116,7 @@ const Quote = () => {
                   
                   <div className="space-y-8">
                     {/* Cost Breakdown Chart */}
-                    <div className="bg-white rounded-lg border overflow-hidden">
+                    <Card className="overflow-hidden border">
                       <div className="h-[350px] pt-4">
                         <QuoteChart
                           type="bar"
@@ -131,10 +137,10 @@ const Quote = () => {
                         </h4>
                         <p className="text-sm text-slate-700">Labor and materials make up the majority of your project costs. Optimizing your material selection could reduce overall expenses by 10-15%.</p>
                       </div>
-                    </div>
+                    </Card>
                     
                     {/* ROI Analysis Chart */}
-                    <div className="bg-white rounded-lg border overflow-hidden">
+                    <Card className="overflow-hidden border">
                       <div className="h-[350px] pt-4">
                         <QuoteChart
                           type="bar"
@@ -158,10 +164,10 @@ const Quote = () => {
                         </h4>
                         <p className="text-sm text-slate-700">Your project shows increasing returns month-over-month. Based on current projections, you'll begin seeing positive cash flow within the first quarter.</p>
                       </div>
-                    </div>
+                    </Card>
                     
                     {/* Long-term Value Projection Chart */}
-                    <div className="bg-white rounded-lg border overflow-hidden">
+                    <Card className="overflow-hidden border">
                       <div className="h-[350px] pt-4">
                         <QuoteChart
                           type="area"
@@ -187,7 +193,7 @@ const Quote = () => {
                         </h4>
                         <p className="text-sm text-slate-700">Your investment will continue to generate value over its lifetime. By year 5, you can expect to have saved more than 6x your initial investment.</p>
                       </div>
-                    </div>
+                    </Card>
                   </div>
                   
                   <div className="p-5 bg-gradient-to-r from-amber-50 to-yellow-50 rounded-lg shadow-sm">
