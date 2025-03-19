@@ -179,6 +179,8 @@ const InstantQuoteEstimator: React.FC<InstantQuoteEstimatorProps> = ({ niche, on
             formState={formState}
             handleInputChange={handleInputChange}
             handleSliderChange={handleSliderChange}
+            onGenerateQuote={generateQuote}
+            isGenerating={isGenerating}
           />
         );
       
@@ -217,6 +219,7 @@ const InstantQuoteEstimator: React.FC<InstantQuoteEstimatorProps> = ({ niche, on
               value={customerInfo.name}
               onChange={handleCustomerInfoChange}
               placeholder="John Doe"
+              className="mt-2"
             />
           </div>
           <div>
@@ -228,6 +231,7 @@ const InstantQuoteEstimator: React.FC<InstantQuoteEstimatorProps> = ({ niche, on
               value={customerInfo.email}
               onChange={handleCustomerInfoChange}
               placeholder="john@example.com"
+              className="mt-2"
             />
           </div>
         </div>
@@ -239,6 +243,7 @@ const InstantQuoteEstimator: React.FC<InstantQuoteEstimatorProps> = ({ niche, on
             value={customerInfo.phone}
             onChange={handleCustomerInfoChange}
             placeholder="(123) 456-7890"
+            className="mt-2"
           />
         </div>
         <div>
@@ -250,59 +255,60 @@ const InstantQuoteEstimator: React.FC<InstantQuoteEstimatorProps> = ({ niche, on
             onChange={handleCustomerInfoChange}
             placeholder="123 Main St, City, State, Zip"
             rows={2}
+            className="mt-2"
           />
         </div>
+        
+        {niche !== "solar" && (
+          <div className="pt-4">
+            <Button
+              onClick={generateQuote}
+              className="w-full bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700"
+              disabled={isGenerating}
+            >
+              {isGenerating ? "Generating Quote..." : "Generate Quote Estimate"}
+            </Button>
+          </div>
+        )}
       </div>
     </div>
   );
 
   return (
-    <Card className="w-full">
-      <CardHeader>
-        <CardTitle className="text-2xl">
+    <div className="w-full">
+      <div className="mb-6">
+        <h2 className="text-2xl font-bold mb-2">
           Instant {niche ? `${niche.charAt(0).toUpperCase()}${niche.slice(1)}` : ""} Quote Estimator
-        </CardTitle>
-        <CardDescription>
-          Generate a detailed quote estimate with AI insights based on your inputs
-        </CardDescription>
-      </CardHeader>
+        </h2>
+        <p className="text-muted-foreground">
+          Enter your project details to get an instant quote estimate
+        </p>
+      </div>
       
-      <CardContent>
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="estimator">Quote Estimator</TabsTrigger>
-            <TabsTrigger value="result" disabled={!quoteResult}>
-              Quote Result {!quoteResult && <Lock className="ml-2 h-3 w-3" />}
-            </TabsTrigger>
-          </TabsList>
-          
-          <TabsContent value="estimator" className="space-y-6 pt-4">
-            {renderInputForm()}
-            {renderCustomerInfoForm()}
-            
-            <div className="pt-4">
-              <Button
-                onClick={generateQuote}
-                className="w-full bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700"
-                disabled={isGenerating}
-              >
-                {isGenerating ? "Generating Quote..." : "Generate Quote Estimate"}
-              </Button>
-            </div>
-          </TabsContent>
-          
-          <TabsContent value="result" className="pt-4">
-            {quoteResult && (
-              <QuoteResultDisplay 
-                quoteResult={quoteResult} 
-                customerInfo={customerInfo}
-                niche={niche}
-              />
-            )}
-          </TabsContent>
-        </Tabs>
-      </CardContent>
-    </Card>
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="estimator">Quote Estimator</TabsTrigger>
+          <TabsTrigger value="result" disabled={!quoteResult}>
+            Quote Result {!quoteResult && <Lock className="ml-2 h-3 w-3" />}
+          </TabsTrigger>
+        </TabsList>
+        
+        <TabsContent value="estimator" className="space-y-6 pt-4">
+          {renderInputForm()}
+          {renderCustomerInfoForm()}
+        </TabsContent>
+        
+        <TabsContent value="result" className="pt-4">
+          {quoteResult && (
+            <QuoteResultDisplay 
+              quoteResult={quoteResult} 
+              customerInfo={customerInfo}
+              niche={niche}
+            />
+          )}
+        </TabsContent>
+      </Tabs>
+    </div>
   );
 };
 

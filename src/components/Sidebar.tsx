@@ -23,6 +23,7 @@ import { useUser } from "@/context/UserContext";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { NicheType } from "@/components/NicheSelection";
 import { Badge } from "@/components/ui/badge";
+import NicheSelectionPopup from "@/components/quote/NicheSelectionPopup";
 
 interface NavItemProps {
   icon: React.ElementType;
@@ -32,6 +33,7 @@ interface NavItemProps {
   onClick: () => void;
   collapsed: boolean;
   badgeText?: string;
+  requiresNiche?: boolean;
 }
 
 const NavItem: React.FC<NavItemProps> = ({
@@ -40,7 +42,8 @@ const NavItem: React.FC<NavItemProps> = ({
   isActive,
   onClick,
   collapsed,
-  badgeText
+  badgeText,
+  requiresNiche
 }) => {
   return (
     <Button
@@ -60,6 +63,11 @@ const NavItem: React.FC<NavItemProps> = ({
               {badgeText}
             </Badge>
           )}
+          {requiresNiche && (
+            <Badge variant="outline" className="text-xs bg-amber-100 text-amber-700 border-amber-200">
+              Niche
+            </Badge>
+          )}
         </div>
       )}
     </Button>
@@ -69,9 +77,11 @@ const NavItem: React.FC<NavItemProps> = ({
 const Sidebar: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { logout, user } = useUser();
+  const { logout, user, setUserNiche } = useUser();
   const isMobile = useIsMobile();
   const [collapsed, setCollapsed] = useState(isMobile);
+  const [nichePopupOpen, setNichePopupOpen] = useState(false);
+  const [pendingNavigation, setPendingNavigation] = useState<string | null>(null);
 
   // Update collapsed state when mobile status changes
   useEffect(() => {
@@ -104,6 +114,23 @@ const Sidebar: React.FC = () => {
     }
   };
 
+  const handleNavigation = (path: string, requiresNiche: boolean = false) => {
+    if (requiresNiche && !user?.niche && user?.role === "provider") {
+      setPendingNavigation(path);
+      setNichePopupOpen(true);
+    } else {
+      navigate(path);
+    }
+  };
+
+  const handleNicheSelect = (niche: NicheType) => {
+    setUserNiche(niche);
+    if (pendingNavigation) {
+      navigate(pendingNavigation);
+      setPendingNavigation(null);
+    }
+  };
+
   // Organize nav items into categories
   const mainNavItems = [
     { 
@@ -111,7 +138,8 @@ const Sidebar: React.FC = () => {
       label: user?.niche 
         ? `${user.niche.charAt(0).toUpperCase() + user.niche.slice(1)} Dashboard` 
         : "Dashboard", 
-      path: getNicheDashboardPath(user?.niche)
+      path: getNicheDashboardPath(user?.niche),
+      requiresNiche: false
     }
   ];
 
@@ -120,17 +148,20 @@ const Sidebar: React.FC = () => {
     { 
       icon: Calculator, 
       label: "ROI Calculator", 
-      path: "/calculator" 
+      path: "/calculator",
+      requiresNiche: true
     },
     { 
       icon: FileText, 
       label: user?.role === "homeowner" ? "Quote Requests" : "Quote Estimator", 
-      path: "/quote" 
+      path: "/quote",
+      requiresNiche: user?.role === "provider"
     },
     { 
       icon: Mail, 
       label: "Send Quote", 
-      path: "/send" 
+      path: "/send",
+      requiresNiche: user?.role === "provider"
     }
   ];
   
@@ -139,7 +170,8 @@ const Sidebar: React.FC = () => {
     featureNavItems.push({ 
       icon: TrendingUp, 
       label: "KPI Tracker", 
-      path: "/kpi-tracker" 
+      path: "/kpi-tracker",
+      requiresNiche: true
     });
   }
 
@@ -147,12 +179,14 @@ const Sidebar: React.FC = () => {
     { 
       icon: User, 
       label: "My Account", 
-      path: "/account" 
+      path: "/account",
+      requiresNiche: false
     },
     { 
       icon: Settings, 
       label: "Settings", 
-      path: "/settings" 
+      path: "/settings",
+      requiresNiche: false
     }
   ];
 
@@ -161,96 +195,107 @@ const Sidebar: React.FC = () => {
   };
 
   return (
-    <div
-      className={cn(
-        "h-screen fixed top-0 left-0 z-40 flex flex-col bg-white border-r border-border transition-all duration-300 ease-in-out pt-16",
-        collapsed ? "w-16" : "w-64"
-      )}
-    >
-      <div className="flex-1 px-3 py-4">
-        <div className="mb-6 flex items-center justify-end">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={toggleSidebar}
-            className="rounded-full p-1 hover:bg-secondary"
-          >
-            {collapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
-          </Button>
-        </div>
-
-        {!collapsed && user?.niche && (
-          <div className="mb-4 px-3">
-            <Badge variant="outline" className="mb-2">
-              {user.niche === "solar" && "Solar Dashboard"}
-              {user.niche === "hvac" && "HVAC Dashboard"}
-              {user.niche === "remodeling" && "Remodeling Dashboard"}
-            </Badge>
-          </div>
+    <>
+      <NicheSelectionPopup
+        open={nichePopupOpen}
+        onOpenChange={setNichePopupOpen}
+        onSelectNiche={handleNicheSelect}
+      />
+      
+      <div
+        className={cn(
+          "h-screen fixed top-0 left-0 z-40 flex flex-col bg-white border-r border-border transition-all duration-300 ease-in-out pt-16",
+          collapsed ? "w-16" : "w-64"
         )}
-
-        <nav className="space-y-4">
-          {/* Main Navigation */}
-          <div>
-            {!collapsed && <div className="px-3 text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">Main</div>}
-            {mainNavItems.map((item) => (
-              <NavItem
-                key={item.path}
-                icon={item.icon}
-                label={item.label}
-                path={item.path}
-                isActive={location.pathname === item.path}
-                onClick={() => navigate(item.path)}
-                collapsed={collapsed}
-              />
-            ))}
+      >
+        <div className="flex-1 px-3 py-4">
+          <div className="mb-6 flex items-center justify-end">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={toggleSidebar}
+              className="rounded-full p-1 hover:bg-secondary"
+            >
+              {collapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
+            </Button>
           </div>
 
-          {/* Features Navigation */}
-          <div>
-            {!collapsed && <div className="px-3 text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">Features</div>}
-            {featureNavItems.map((item) => (
-              <NavItem
-                key={item.path}
-                icon={item.icon}
-                label={item.label}
-                path={item.path}
-                isActive={location.pathname === item.path}
-                onClick={() => navigate(item.path)}
-                collapsed={collapsed}
-              />
-            ))}
-          </div>
+          {!collapsed && user?.niche && (
+            <div className="mb-4 px-3">
+              <Badge variant="outline" className="mb-2">
+                {user.niche === "solar" && "Solar Dashboard"}
+                {user.niche === "hvac" && "HVAC Dashboard"}
+                {user.niche === "remodeling" && "Remodeling Dashboard"}
+              </Badge>
+            </div>
+          )}
 
-          {/* Account Navigation */}
-          <div>
-            {!collapsed && <div className="px-3 text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">Account</div>}
-            {accountNavItems.map((item) => (
-              <NavItem
-                key={item.path}
-                icon={item.icon}
-                label={item.label}
-                path={item.path}
-                isActive={location.pathname === item.path}
-                onClick={() => navigate(item.path)}
-                collapsed={collapsed}
-              />
-            ))}
-          </div>
-        </nav>
+          <nav className="space-y-4">
+            {/* Main Navigation */}
+            <div>
+              {!collapsed && <div className="px-3 text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">Main</div>}
+              {mainNavItems.map((item) => (
+                <NavItem
+                  key={item.path}
+                  icon={item.icon}
+                  label={item.label}
+                  path={item.path}
+                  isActive={location.pathname === item.path}
+                  onClick={() => handleNavigation(item.path, item.requiresNiche)}
+                  collapsed={collapsed}
+                  requiresNiche={item.requiresNiche}
+                />
+              ))}
+            </div>
 
-        <div className="mt-auto">
-          <Button
-            variant="ghost"
-            className="w-full justify-start h-12 text-destructive hover:bg-destructive/10 hover:text-destructive"
-            onClick={() => logout()}
-          >
-            <LogOut size={20} className={cn("flex-shrink-0", collapsed ? "mr-0" : "mr-2")} />
-            {!collapsed && <span>Logout</span>}
-          </Button>
+            {/* Features Navigation */}
+            <div>
+              {!collapsed && <div className="px-3 text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">Features</div>}
+              {featureNavItems.map((item) => (
+                <NavItem
+                  key={item.path}
+                  icon={item.icon}
+                  label={item.label}
+                  path={item.path}
+                  isActive={location.pathname === item.path}
+                  onClick={() => handleNavigation(item.path, item.requiresNiche)}
+                  collapsed={collapsed}
+                  requiresNiche={item.requiresNiche}
+                />
+              ))}
+            </div>
+
+            {/* Account Navigation */}
+            <div>
+              {!collapsed && <div className="px-3 text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">Account</div>}
+              {accountNavItems.map((item) => (
+                <NavItem
+                  key={item.path}
+                  icon={item.icon}
+                  label={item.label}
+                  path={item.path}
+                  isActive={location.pathname === item.path}
+                  onClick={() => handleNavigation(item.path, item.requiresNiche)}
+                  collapsed={collapsed}
+                  requiresNiche={item.requiresNiche}
+                />
+              ))}
+            </div>
+          </nav>
+
+          <div className="mt-auto">
+            <Button
+              variant="ghost"
+              className="w-full justify-start h-12 text-destructive hover:bg-destructive/10 hover:text-destructive"
+              onClick={() => logout()}
+            >
+              <LogOut size={20} className={cn("flex-shrink-0", collapsed ? "mr-0" : "mr-2")} />
+              {!collapsed && <span>Logout</span>}
+            </Button>
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 
